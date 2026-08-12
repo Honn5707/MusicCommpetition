@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─────────────────────────────────────────────────────────────
+   디자인 시스템 — 깔끔한 다크 + 의도적인 색 사용
+   - 배경: 거의 평평한 딥슬레이트에 은은한 인디고 글로우 한 겹만
+   - 카드/인풋: 과한 blur·glow 없이 차분한 유리 표면
+   - 색: 인디고(브랜드/호스트) · 로즈(도전자) 두 축으로 절제해서 사용
+   페이지들은 아래 컴포넌트 클래스를 재사용해 하나의 시스템으로 보이게 한다.
+   ───────────────────────────────────────────────────────────── */
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    min-height: 100vh;
+    margin: 0;
+    color: #e9eaf0;
+    font-family:
+      'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+      'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    background:
+      radial-gradient(900px 600px at 50% -10%, rgba(99, 102, 241, 0.14), transparent 60%),
+      #0b0d14;
+    background-attachment: fixed;
+  }
+}
+
+@layer components {
+  /* 기본 유리 카드: 차분한 표면 + 부드러운 뉴트럴 그림자 */
+  .glass {
+    @apply rounded-2xl border border-white/[0.08] bg-white/[0.03];
+    box-shadow: 0 6px 24px -12px rgba(0, 0, 0, 0.6);
+  }
+  /* 상호작용 가능한 카드: 호버 시 테두리만 은은하게 밝아짐(글로우 없음) */
+  .glass-interactive {
+    @apply glass transition-colors duration-200;
+  }
+  .glass-interactive:hover {
+    @apply border-white/20 bg-white/[0.05];
+  }
+
+  /* 유리 인풋 */
+  .glass-input {
+    @apply w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white outline-none transition-colors;
+    @apply placeholder:text-white/30 focus:border-indigo-400/70 focus:bg-white/[0.06];
+  }
+
+  /* 포인트(주요) 버튼: 단색 인디고 */
+  .btn-primary {
+    @apply rounded-xl bg-indigo-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-200;
+    @apply hover:bg-indigo-400 disabled:opacity-40 disabled:hover:bg-indigo-500;
+  }
+
+  /* 보조(고스트) 버튼: 뉴트럴 유리 테두리 */
+  .btn-ghost {
+    @apply rounded-xl border border-white/15 bg-white/[0.03] px-5 py-2.5 text-sm font-medium text-white/75 transition-colors;
+    @apply hover:border-white/30 hover:text-white;
+  }
+}

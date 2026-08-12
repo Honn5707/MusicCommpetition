@@ -1,0 +1,3 @@
+- [프론트 권한 UI는 UX 전용](frontend-auth-is-ux-only.md) — 버튼 노출은 UX일 뿐, 서버 @AuthenticationPrincipal이 진짜 경계
+- [디자인 시스템: 깔끔한 다크+인디고/로즈](design-system-glassmorphism.md) — 새 UI는 index.css 공통 클래스(.glass/.btn-primary) 재사용, 화려한 그라데이션/글로우 금지
+- [제품명·기능: 듣기평가/유튜브검색](product-naming-and-features.md) — UI는 '듣기평가', 코드는 battle. 유튜브 검색은 VITE_YOUTUBE_API_KEY 있을 때만

@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    username: root
+    password: your-local-mysql-password
+
+jwt:
+  secret: "replace-with-a-long-random-string"

@@ -1,0 +1,52 @@
+spring:
+  config:
+    import: optional:classpath:application-local.yml
+  datasource:
+    url: jdbc:mysql://localhost:3306/music_battle?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update   # 실무 습관: 운영 DB는 절대 auto-update 하지 않는다. 마이그레이션은 Flyway/Liquibase로.
+    open-in-view: false    # OSIV 끄기 - 트랜잭션 경계를 서비스 레이어로 강제
+    properties:
+      hibernate:
+        format_sql: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+# 도메인 규칙: 코드에 매직넘버로 박아두지 않고 설정으로 분리
+# -> 나중에 밸런싱 튜닝할 때 배포 없이 값만 바꿀 수 있게(외부 설정/Config Server 연동 대비)
+battle:
+  token:
+    access-token-duration: 1h
+    refresh-token-duration: 1d
+  recruiting:
+    expire-hours: 1
+  vote:
+    weight-anonymous: 1
+    weight-member: 3
+  extra-vote:
+    max-per-battle: 2
+  member:
+    max-join-battle: 3
+  rally:
+    default-vote-window-seconds: 1800   # 30분
+    streak-multiplier-per-win: 0.2
+    streak-multiplier-cap: 3.0
+  one-vs-one:
+    default-vote-window-seconds: 43200  # 12시간
+  anti-abuse:
+    vote-lock-ttl-seconds: 86400        # 24시간
+
+logging:
+  level:
+    com.musicbattle: DEBUG
+
+jwt:
+  secret: ${JWT_SECRET:}
+  expiration-ms: 3600000   # 1시간

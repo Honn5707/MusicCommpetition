@@ -1,0 +1,25 @@
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.gradle/
+*.iml
+*.ipr
+*.iws
+
+# Backend (Gradle / Spring Boot)
+backend/build/
+backend/.gradle/
+backend/.idea/
+backend/src/main/resources/application-local.yml
+!backend/src/main/resources/application-local.yml.example
+
+# Frontend (Vite / Node)
+front/**/node_modules/
+front/**/dist/
+front/**/*.tsbuildinfo
+front/**/.env
+front/**/.env.local
+front/**/*.local
+!front/**/.env.example
