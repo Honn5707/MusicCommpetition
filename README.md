@@ -55,7 +55,8 @@ front/music-battle-frontend/src/
 - `ddl-auto: validate` — 로컬 개발이라도 스키마는 자동 변경하지 않고 명시적으로 관리하는 습관
 - Redis(락/실시간 차단)와 MySQL(영속 기록)의 책임을 명확히 분리 — 캐시 계층과 영속 계층의 책임이 섞이면 장애 원인 추적이 어려워짐
 - 도메인 규칙(투표 가중치, 투표창 길이, 연승 배수 등)은 `application.yml`의 `battle.*`로 외부화, 코드에 매직넘버로 박지 않음
-- 프론트는 Vite 프록시로 백엔드(8080)를 같은 출처처럼 호출해 개발 중 CORS 문제를 피함 (배포 시엔 별도 CORS/리버스 프록시 설정 필요)
+- 프론트는 Vite 프록시로 백엔드(8080)를 같은 출처처럼 호출해 개발 중 CORS 문제를 피함
+- 배포 환경에서는 Nginx가 정적 프론트 빌드를 서빙하면서 `/api/`만 백엔드 컨테이너로 리버스 프록시 — 개발(Vite 프록시)과 배포(Nginx 프록시) 모두 프론트가 항상 같은 출처로만 요청하도록 통일
 
 ## 개발 히스토리 (주요 변경점)
 
@@ -73,13 +74,13 @@ front/music-battle-frontend/src/
 | 10. 프론트 권한 UX 정리 | 삭제/항복 등 버튼 노출을 프론트에서 조건부로 숨기되, 이는 UX 편의일 뿐 실제 인가는 항상 서버 `@AuthenticationPrincipal`이 최종 판단하도록 경계를 명확히 함 |
 | 11. 브랜딩 정리 | 사용자 화면 문구를 "음악 배틀"에서 "듣기평가"로 통일 (코드/API 식별자는 `battle` 유지) |
 | 12. Git 저장소 초기화 | 시크릿(DB 비밀번호, JWT 시크릿) 하드코딩을 환경변수 + gitignore 처리된 로컬 오버라이드로 분리하고 버전 관리 시작 |
+| 13. Docker 배포 설정 | `docker-compose.yml`(MySQL/Redis/backend/nginx 4개 컨테이너), 백엔드 멀티스테이지 `Dockerfile`, Nginx 리버스 프록시(`nginx.conf`) 추가. 시크릿은 루트 `.env`(gitignore)로 주입 |
 
 ## 로드맵 (아직 구현되지 않은 것)
 
 - 렐리(Rally) 모드 큐(Redis List)와 상태 관리 — `BattleMode.RALLY`는 정의되어 있으나 서비스 로직 미구현
 - 토너먼트 대진표 생성/진출 로직 — `Match.nextMatchId` 자리만 마련되어 있고 브라켓 진행 로직은 없음
 - 투표 참여 보상 포인트 지급 — `PointTransactionType.VOTE_REWARD` 타입은 정의되어 있으나 지급 로직 미연결 (현재는 승리 보상만 지급)
-- 배포용 CORS/리버스 프록시 구성 (현재는 로컬 개발용 Vite 프록시로만 해결)
 
 ## 로컬 실행
 
@@ -99,3 +100,12 @@ npm install
 npm run dev
 ```
 `http://localhost:5173`에서 뜨며, 백엔드(8080)가 함께 떠 있어야 API 호출이 동작합니다.
+
+**Docker Compose (전체 스택 한 번에)**
+```bash
+cp .env.example .env
+# .env 에 MYSQL_ROOT_PASSWORD, JWT_SECRET 채운 뒤
+cd front/music-battle-frontend && npm run build && cd ../..   # nginx가 서빙할 정적 빌드 생성
+docker compose up --build
+```
+MySQL / Redis / Spring Boot 백엔드 / Nginx(정적 프론트 서빙 + `/api/` 리버스 프록시) 4개 컨테이너가 함께 뜨며, `http://localhost`로 접속합니다.
