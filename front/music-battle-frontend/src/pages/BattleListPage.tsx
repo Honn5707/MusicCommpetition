@@ -37,19 +37,19 @@ export default function BattleListPage() {
   }, [page, retryKey])
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-10">
-      <div className="mb-8 flex items-end justify-between">
+    <div className="mx-auto max-w-5xl px-6 py-6">
+      <div className="mb-4 flex items-end justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">오늘의 듣기평가</h1>
-          <p className="mt-1.5 text-sm text-white/50">두 곡을 듣고 더 마음에 드는 쪽에 한 표를 던지세요.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-white">오늘의 듣기평가</h1>
+          <p className="mt-1 text-sm text-white/50">두 곡을 듣고 더 마음에 드는 쪽에 한 표를 던지세요.</p>
         </div>
-        <Link to="/battles/new" className="btn-primary">
+        <Link to="/battles/new" className="btn-primary text-sm px-4 py-1.5">
           + 듣기평가 만들기
         </Link>
       </div>
 
       {loading && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
           {Array.from({ length: PAGE_SIZE }).map((_, i) => (
             <div key={i} className="h-32 animate-pulse rounded-2xl border border-white/5 bg-white/[0.03]" />
           ))}
@@ -73,7 +73,7 @@ export default function BattleListPage() {
 
       {!loading && !error && data && data.content.length > 0 && (
         <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
             {data.content.map((battle) => (
               <BattleCard key={battle.battleId} battle={battle} />
             ))}

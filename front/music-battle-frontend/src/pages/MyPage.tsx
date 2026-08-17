@@ -20,7 +20,7 @@ function Section({ title, battles }: { title: string; battles: BattleSummaryResp
           <p className="text-sm text-white/40">아직 듣기평가가 없습니다.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
           {battles.map((battle) => (
             <BattleCard key={battle.battleId} battle={battle} />
           ))}
@@ -145,7 +145,7 @@ export default function MyPage() {
       {loading && (
         <>
           <div className="h-28 animate-pulse rounded-2xl border border-white/5 bg-white/[0.03]" />
-          <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="mt-10 grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="h-32 animate-pulse rounded-2xl border border-white/5 bg-white/[0.03]" />
             ))}

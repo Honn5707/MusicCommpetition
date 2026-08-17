@@ -22,7 +22,7 @@ function StatusBadge({ status }: { status: MatchStatus }) {
   const isLive = status === 'RECRUITING' || status === 'VOTING'
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium tracking-wide ${
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium tracking-wide ${
         isLive
           ? 'border border-indigo-400/40 bg-indigo-500/15 text-indigo-100'
           : status === 'CALCULATING'
@@ -80,23 +80,23 @@ function EntryCard({
       } ${dimmed ? 'opacity-50' : ''}`}
     >
       <div className="flex items-center justify-between">
-        <span className="text-sm font-semibold tracking-wide text-white/80">{label}</span>
+        <span className="text-xl font-semibold tracking-wide text-white/80 sm:text-2xl">{label}</span>
         {isWinner && (
-          <span className="rounded-full bg-indigo-500 px-2.5 py-0.5 text-xs font-semibold text-white">
+          <span className="rounded-full bg-indigo-500 px-3 py-1 text-sm font-semibold text-white">
             WINNER
           </span>
         )}
       </div>
       <YoutubeEmbed videoId={videoId} title={songTitle} />
       <div>
-        <p className="text-base font-semibold text-white">{songTitle}</p>
-        <p className="mt-1 text-3xl font-bold tracking-tight text-white">
+        <p className="text-2xl font-semibold text-white sm:text-3xl">{songTitle}</p>
+        <p className="mt-1 text-5xl font-bold tracking-tight text-white sm:text-6xl">
           {score}
-          <span className="ml-1 text-sm font-medium text-white/40">표</span>
+          <span className="ml-1.5 text-xl font-medium text-white/40">표</span>
         </p>
       </div>
       {onVote && (
-        <button onClick={onVote} disabled={voting} className="btn-primary mt-1 w-full">
+        <button onClick={onVote} disabled={voting} className="btn-primary mt-1 w-full text-lg">
           {voting ? '투표 중…' : '투표하기'}
         </button>
       )}
@@ -164,12 +164,12 @@ function ChallengerJoinCard({ battleId, onJoined }: { battleId: number; onJoined
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-dashed border-white/20 bg-white/[0.04] p-5 backdrop-blur-xl">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-widest text-white/40">도전자</span>
-        <span className="rounded-full border border-white/10 px-2.5 py-0.5 text-xs text-white/40">
+        <span className="text-sm font-semibold uppercase tracking-widest text-white/40">참가자</span>
+        <span className="rounded-full border border-white/10 px-3 py-0.5 text-sm text-white/40">
           모집중
         </span>
       </div>
-      <p className="text-sm text-white/50">내 곡으로 도전해서 듣기평가를 시작하세요.</p>
+      <p className="text-base text-white/50">내 곡으로 참가해서 듣기평가를 시작하세요.</p>
 
       {isAuthenticated ? (
         <form onSubmit={handleJoin} className="space-y-3">
@@ -178,7 +178,7 @@ function ChallengerJoinCard({ battleId, onJoined }: { battleId: number; onJoined
               <button
                 type="button"
                 onClick={() => setSource('search')}
-                className={`flex-1 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                   source === 'search' ? 'bg-indigo-500 text-white' : 'text-white/60 hover:text-white'
                 }`}
               >
@@ -187,7 +187,7 @@ function ChallengerJoinCard({ battleId, onJoined }: { battleId: number; onJoined
               <button
                 type="button"
                 onClick={() => setSource('link')}
-                className={`flex-1 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                   source === 'link' ? 'bg-indigo-500 text-white' : 'text-white/60 hover:text-white'
                 }`}
               >
@@ -215,19 +215,19 @@ function ChallengerJoinCard({ battleId, onJoined }: { battleId: number; onJoined
             className="glass-input py-2.5"
           />
 
-          {error && <p className="text-sm text-rose-300">{error}</p>}
+          {error && <p className="text-base text-rose-300">{error}</p>}
 
-          <button type="submit" disabled={submitting} className="btn-primary w-full">
-            {submitting ? '참가 중…' : '도전자로 참가'}
+          <button type="submit" disabled={submitting} className="btn-primary w-full text-lg">
+            {submitting ? '참가 중…' : '참가하기'}
           </button>
         </form>
       ) : (
         <Link
           to="/login"
           state={{ from: `/battles/${battleId}` }}
-          className="btn-primary block w-full text-center"
+          className="btn-primary block w-full text-center text-lg"
         >
-          로그인하고 도전하기
+          로그인하고 참가하기
         </Link>
       )}
     </div>
@@ -337,8 +337,8 @@ export default function BattleDetailPage() {
   const canSurrender = isParticipant && isVoting && !!data?.challengerVideoId
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-10">
-      <Link to="/" className="text-sm text-white/40 transition-colors hover:text-white">
+    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-10">
+      <Link to="/" className="text-base text-white/40 transition-colors hover:text-white">
         ← 목록으로
       </Link>
 
@@ -361,19 +361,19 @@ export default function BattleDetailPage() {
       {!loading && !error && data && (
         <>
           <div className="mb-6 mt-4 flex items-start justify-between gap-4">
-            <h1 className="text-3xl font-bold tracking-tight text-white">{data.title}</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-white sm:text-4xl">{data.title}</h1>
             <StatusBadge status={data.matchStatus} />
           </div>
 
           {isSettled && (
-            <div className="mb-6 overflow-hidden rounded-2xl border border-white/10 bg-indigo-500/10 px-6 py-4 text-center backdrop-blur-xl">
-              <p className="text-sm font-semibold text-white">
+            <div className="mb-6 overflow-hidden rounded-2xl border border-white/10 bg-indigo-500/10 px-6 py-5 text-center backdrop-blur-xl">
+              <p className="text-xl font-semibold text-white sm:text-2xl">
                 {data.matchStatus === 'CALCULATING'
                   ? '집계 중입니다…'
                   : data.winner === 'host'
                     ? `${data.hostNickname} 승리 🏆`
                     : data.winner === 'challenger'
-                      ? `${data.challengerNickname ?? '도전자'} 승리 🏆`
+                      ? `${data.challengerNickname ?? '참가자'} 승리 🏆`
                       : data.winner === 'equal'
                         ? '무승부'
                         : '결과 없음'}
@@ -382,7 +382,7 @@ export default function BattleDetailPage() {
           )}
 
           {voteError && (
-            <div className="mb-4 rounded-xl border border-rose-400/30 bg-rose-500/10 px-4 py-2.5 text-center text-sm text-rose-200">
+            <div className="mb-4 rounded-xl border border-rose-400/30 bg-rose-500/10 px-4 py-2.5 text-center text-base text-rose-200">
               {voteError}
             </div>
           )}
@@ -401,7 +401,7 @@ export default function BattleDetailPage() {
 
             {data.challengerVideoId && data.challengerSongTitle ? (
               <EntryCard
-                label={data.challengerNickname ?? '도전자'}
+                label={data.challengerNickname ?? '참가자'}
                 songTitle={data.challengerSongTitle}
                 videoId={data.challengerVideoId}
                 score={data.challengerScore}
@@ -414,18 +414,18 @@ export default function BattleDetailPage() {
               // 내 듣기평가에는 참가할 수 없으니, 호스트에게는 폼 대신 대기 안내를 보여준다.
               isHost ? (
                 <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-white/20 bg-white/[0.04] p-5 text-center backdrop-blur-xl">
-                  <span className="text-xs font-semibold uppercase tracking-widest text-white/40">
-                    도전자
+                  <span className="text-sm font-semibold uppercase tracking-widest text-white/40">
+                    참가자
                   </span>
                   <span className="h-2 w-2 animate-pulse rounded-full bg-indigo-300" />
-                  <p className="text-sm text-white/40">플레이어를 기다리는 중…</p>
+                  <p className="text-base text-white/40">플레이어를 기다리는 중…</p>
                 </div>
               ) : (
                 <ChallengerJoinCard battleId={id} onJoined={load} />
               )
             ) : (
-              <div className="flex items-center justify-center rounded-2xl border border-dashed border-white/20 bg-white/[0.04] p-5 text-sm text-white/40 backdrop-blur-xl">
-                도전자가 없습니다.
+              <div className="flex items-center justify-center rounded-2xl border border-dashed border-white/20 bg-white/[0.04] p-5 text-base text-white/40 backdrop-blur-xl">
+                참가자가 없습니다.
               </div>
             )}
           </div>
@@ -433,7 +433,7 @@ export default function BattleDetailPage() {
           {(canDelete || canSurrender) && (
             <div className="mt-6 flex flex-col items-end gap-2">
               {actionError && (
-                <p className="w-full rounded-xl border border-rose-400/30 bg-rose-500/10 px-4 py-2.5 text-center text-sm text-rose-200">
+                <p className="w-full rounded-xl border border-rose-400/30 bg-rose-500/10 px-4 py-2.5 text-center text-base text-rose-200">
                   {actionError}
                 </p>
               )}
@@ -441,7 +441,7 @@ export default function BattleDetailPage() {
                 <button
                   onClick={handleDelete}
                   disabled={action !== null}
-                  className="rounded-xl border border-white/20 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-white/70 transition-colors hover:border-rose-400/60 hover:text-rose-300 disabled:opacity-40"
+                  className="rounded-xl border border-white/20 bg-white/[0.04] px-4 py-2 text-base font-semibold text-white/70 transition-colors hover:border-rose-400/60 hover:text-rose-300 disabled:opacity-40"
                 >
                   {action === 'delete' ? '삭제 중…' : '듣기평가 삭제'}
                 </button>
@@ -450,7 +450,7 @@ export default function BattleDetailPage() {
                 <button
                   onClick={handleSurrender}
                   disabled={action !== null}
-                  className="rounded-xl border border-white/20 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-white/70 transition-colors hover:border-rose-400/60 hover:text-rose-300 disabled:opacity-40"
+                  className="rounded-xl border border-white/20 bg-white/[0.04] px-4 py-2 text-base font-semibold text-white/70 transition-colors hover:border-rose-400/60 hover:text-rose-300 disabled:opacity-40"
                 >
                   {action === 'surrender' ? '항복 처리 중…' : '항복하기'}
                 </button>

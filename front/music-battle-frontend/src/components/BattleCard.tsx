@@ -48,24 +48,24 @@ function DetailRow({
   score,
   leading,
 }: {
-  side: '호스트' | '도전자'
+  side: 'host' | 'challenger'
   nickname: string
   songTitle: string
   score: number
   leading: boolean
 }) {
-  const accent = side === '호스트' ? 'text-indigo-300' : 'text-rose-300'
+  const accent = side === 'host' ? 'text-indigo-300' : 'text-rose-300'
   return (
     <div className="flex items-center justify-between gap-3">
       <div className="flex min-w-0 items-center gap-2">
-        <span className={`shrink-0 text-[11px] font-semibold ${accent}`}>{side}</span>
-        <span className="truncate text-xs text-white/70">{songTitle}</span>
+        <span className={`max-w-[7rem] shrink-0 truncate text-sm font-semibold ${accent}`}>
+          {nickname}
+        </span>
+        <span className="truncate text-sm text-white/70">{songTitle}</span>
       </div>
-      <div className="flex shrink-0 items-center gap-1.5 text-xs text-white/50">
+      <div className="flex shrink-0 items-center gap-1.5 text-sm text-white/60">
         {leading && <span className={accent}>▲</span>}
         <span className="tabular-nums">{score}표</span>
-        <span className="text-white/25">·</span>
-        <span className="max-w-[6rem] truncate text-white/40">{nickname}</span>
       </div>
     </div>
   )
@@ -109,7 +109,7 @@ export function BattleCard({ battle }: { battle: BattleSummaryResponse }) {
               </p>
             </>
           ) : (
-            <p className="text-sm text-white/40">도전자 대기중</p>
+            <p className="text-sm text-white/40">상대 대기중</p>
           )}
         </div>
       </div>
@@ -121,7 +121,7 @@ export function BattleCard({ battle }: { battle: BattleSummaryResponse }) {
         <div className="overflow-hidden">
           <div className="mt-1 space-y-2 border-t border-white/10 pt-3">
             <DetailRow
-              side="호스트"
+              side="host"
               nickname={battle.hostNickname}
               songTitle={battle.hostSongTitle}
               score={battle.hostScore}
@@ -129,16 +129,16 @@ export function BattleCard({ battle }: { battle: BattleSummaryResponse }) {
             />
             {hasChallenger ? (
               <DetailRow
-                side="도전자"
-                nickname={battle.challengerNickname ?? '도전자'}
+                side="challenger"
+                nickname={battle.challengerNickname ?? '참가자'}
                 songTitle={battle.challengerSongTitle ?? ''}
                 score={battle.challengerScore}
                 leading={leader === 'challenger'}
               />
             ) : (
-              <p className="text-xs text-white/40">아직 도전자를 기다리는 중이에요.</p>
+              <p className="text-sm text-white/40">아직 상대를 기다리는 중이에요.</p>
             )}
-            <div className="flex items-center justify-between pt-1 text-[11px] text-white/40">
+            <div className="flex items-center justify-between pt-1 text-sm text-white/40">
               <span>총 {total}표{leader === 'tie' ? ' · 접전' : ''}</span>
               <span className="font-medium text-indigo-300">자세히 보기 →</span>
             </div>
