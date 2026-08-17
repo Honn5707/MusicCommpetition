@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext.tsx'
 import { ApiError } from '../api/client.ts'
+import Recaptcha, { type RecaptchaHandle } from '../components/Recaptcha.tsx'
 
 type Mode = 'login' | 'register'
 
@@ -23,10 +24,13 @@ export default function LoginPage() {
   const [nickname, setNickname] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null)
+  const recaptchaRef = useRef<RecaptchaHandle>(null)
 
   function switchMode(next: Mode) {
     setMode(next)
     setError(null)
+    setRecaptchaToken(null)
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -47,13 +51,17 @@ export default function LoginPage() {
         setError('닉네임은 2자 이상이어야 합니다.')
         return
       }
+      if (!recaptchaToken) {
+        setError('로봇이 아님을 확인해주세요.')
+        return
+      }
     }
 
     setSubmitting(true)
     setError(null)
     try {
       if (mode === 'register') {
-        await register(id, password, nickname.trim())
+        await register(id, password, nickname.trim(), recaptchaToken!)
       } else {
         await login(id, password)
       }
@@ -61,6 +69,8 @@ export default function LoginPage() {
     } catch (err) {
       setError(err instanceof ApiError ? err.message : '요청에 실패했습니다. 잠시 후 다시 시도해주세요.')
       setSubmitting(false)
+      // 토큰은 1회용이라 실패 후 재시도하려면 체크박스를 다시 눌러야 한다.
+      recaptchaRef.current?.reset()
     }
   }
 
@@ -117,6 +127,10 @@ export default function LoginPage() {
               className="glass-input"
             />
           </div>
+
+          {mode === 'register' && (
+            <Recaptcha ref={recaptchaRef} onChange={setRecaptchaToken} />
+          )}
 
           {error && <p className="text-sm text-rose-300">{error}</p>}
 

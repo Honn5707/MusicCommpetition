@@ -1,6 +1,7 @@
 package com.musicbattle.service;
 
 
+import com.musicbattle.config.RecaptchaProperties;
 import com.musicbattle.domain.Battle;
 import com.musicbattle.domain.Match;
 import com.musicbattle.domain.MatchEntry;
@@ -10,6 +11,7 @@ import com.musicbattle.domain.enums.MatchStatus;
 import com.musicbattle.domain.enums.Provider;
 import com.musicbattle.repository.*;
 import com.musicbattle.util.BattleSummaryAssembler;
+import com.musicbattle.util.RecaptchaUtilities;
 import com.musicbattle.web.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,10 +33,15 @@ public class MemberService {
     private final BattleSummaryAssembler battleSummaryAssembler;
     private final MatchRepository matchRepository;
     private final BattleService battleService;
+    private final RecaptchaUtilities recaptchaUtilities;
 
     @Transactional
     public MemberRegisterResult register(MemberRegisterRequest request){
         Provider provider = request.provider();
+
+        String recaptchaToken = request.recaptchaToken();
+        recaptchaUtilities.certify(recaptchaToken);
+
 
         String providerId = request.providerId();
         if(memberRepository.findByProviderId(providerId).isPresent()) throw new IllegalStateException("이미 존재하는 ID:"+providerId);

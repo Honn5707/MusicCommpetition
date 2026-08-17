@@ -11,6 +11,8 @@ export interface MemberRegisterRequest {
   // 백엔드가 LOCAL 가입 시 8~16자 비밀번호를 요구한다.
   password: string
   nickname: string
+  // reCAPTCHA v2 체크박스 검증 토큰. 백엔드가 Google siteverify로 재검증 후 실패 시 409를 낸다.
+  recaptchaToken: string
 }
 
 export interface MemberRegisterResult {

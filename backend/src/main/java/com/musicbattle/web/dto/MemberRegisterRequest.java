@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record MemberRegisterRequest(
+        @NotBlank String recaptchaToken,
         @NotNull Provider provider,
         @NotNull String providerId,
         //추후 https로 해쉬화
