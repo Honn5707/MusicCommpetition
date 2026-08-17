@@ -75,37 +75,11 @@ front/music-battle-frontend/src/
 | 11. 브랜딩 정리 | 사용자 화면 문구를 "음악 배틀"에서 "듣기평가"로 통일 (코드/API 식별자는 `battle` 유지) |
 | 12. Git 저장소 초기화 | 시크릿(DB 비밀번호, JWT 시크릿) 하드코딩을 환경변수 + gitignore 처리된 로컬 오버라이드로 분리하고 버전 관리 시작 |
 | 13. Docker 배포 설정 | `docker-compose.yml`(MySQL/Redis/backend/nginx 4개 컨테이너), 백엔드 멀티스테이지 `Dockerfile`, Nginx 리버스 프록시(`nginx.conf`) 추가. 시크릿은 루트 `.env`(gitignore)로 주입 |
+| 14. RECAPTCHA를 이용하여 회원가입 로직 강화 
 
-## 로드맵 (아직 구현되지 않은 것)
+## 아직 구현되지 않은 것
 
 - 렐리(Rally) 모드 큐(Redis List)와 상태 관리 — `BattleMode.RALLY`는 정의되어 있으나 서비스 로직 미구현
 - 토너먼트 대진표 생성/진출 로직 — `Match.nextMatchId` 자리만 마련되어 있고 브라켓 진행 로직은 없음
 - 투표 참여 보상 포인트 지급 — `PointTransactionType.VOTE_REWARD` 타입은 정의되어 있으나 지급 로직 미연결 (현재는 승리 보상만 지급)
 
-## 로컬 실행
-
-**백엔드** (MySQL, Redis가 로컬에 떠 있어야 함)
-```bash
-cd backend
-cp src/main/resources/application-local.yml.example src/main/resources/application-local.yml
-# application-local.yml 에 본인 MySQL 비밀번호와 JWT 시크릿을 채운 뒤
-./gradlew bootRun
-```
-
-**프론트엔드**
-```bash
-cd front/music-battle-frontend
-cp .env.example .env.local   # YouTube 검색을 쓰려면 API 키 입력, 없으면 비워둬도 됨
-npm install
-npm run dev
-```
-`http://localhost:5173`에서 뜨며, 백엔드(8080)가 함께 떠 있어야 API 호출이 동작합니다.
-
-**Docker Compose (전체 스택 한 번에)**
-```bash
-cp .env.example .env
-# .env 에 MYSQL_ROOT_PASSWORD, JWT_SECRET 채운 뒤
-cd front/music-battle-frontend && npm run build && cd ../..   # nginx가 서빙할 정적 빌드 생성
-docker compose up --build
-```
-MySQL / Redis / Spring Boot 백엔드 / Nginx(정적 프론트 서빙 + `/api/` 리버스 프록시) 4개 컨테이너가 함께 뜨며, `http://localhost`로 접속합니다.
