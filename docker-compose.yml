@@ -31,12 +31,11 @@ services:
 
       JWT_SECRET: ${JWT_SECRET}
   nginx:
-    image: nginx:latest
+    build: ./front/music-battle-frontend
     ports:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./front/music-battle-frontend/dist:/usr/share/nginx/html
     depends_on:
       - backend
 
