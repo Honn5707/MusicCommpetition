@@ -9,7 +9,8 @@ interface AuthContextValue {
   // providerId(아이디) + password 로 로그인. 성공 시 토큰을 저장하고 상태를 갱신한다.
   login: (providerId: string, password: string) => Promise<void>
   // 회원가입 후 곧바로 같은 자격증명으로 로그인까지 처리한다.
-  register: (providerId: string, password: string, nickname: string, recaptchaToken: string) => Promise<void>
+  // email 은 사전에 이메일 인증(code-send → code-confirm)을 마친 주소여야 한다.
+  register: (providerId: string, password: string, nickname: string, email: string) => Promise<void>
   logout: () => void
 }
 
@@ -26,8 +27,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const register = useCallback(
-    async (providerId: string, password: string, nickname: string, recaptchaToken: string) => {
-      await registerMember({ provider: 'LOCAL', providerId, password, nickname, recaptchaToken })
+    async (providerId: string, password: string, nickname: string, email: string) => {
+      await registerMember({ provider: 'LOCAL', providerId, password, nickname, email })
       // 가입 직후 자동 로그인해서 토큰을 확보한다.
       await login(providerId, password)
     },

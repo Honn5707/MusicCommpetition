@@ -29,7 +29,7 @@ public class SecurityConfig {
                 }))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/api/battles", "/api/battles/*").permitAll()
-                        .requestMatchers("/api/members/register", "/api/auth/login", "/api/matches/*/votes", "/api/auth/refresh").permitAll()
+                        .requestMatchers("/api/members/register", "/api/email/*", "/api/auth/login", "/api/matches/*/votes", "/api/auth/refresh").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

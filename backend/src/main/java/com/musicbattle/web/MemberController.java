@@ -3,9 +3,7 @@ package com.musicbattle.web;
 
 
 import com.musicbattle.service.MemberService;
-import com.musicbattle.web.dto.DeleteAccountRequest;import com.musicbattle.web.dto.MemberPageResponse;
-import com.musicbattle.web.dto.MemberRegisterRequest;
-import com.musicbattle.web.dto.MemberRegisterResult;
+import com.musicbattle.web.dto.*;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

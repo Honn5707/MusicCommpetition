@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { searchYoutube, type YoutubeSearchResult } from '../lib/youtubeSearch.ts'
 
-// 유튜브 검색창 + 결과 리스트. 결과를 고르면 onSelect로 넘긴다.
-// (실제 검색은 lib/youtubeSearch.ts, 키가 있을 때만 이 컴포넌트를 렌더한다.)
+// 유튜브 검색창 + 결과 리스트. 검색 버튼 없이 '입력하는 대로' 자동 검색해 밑에 목록으로 보여준다.
+// 결과를 고르면 onSelect로 넘긴다. (실제 검색은 lib/youtubeSearch.ts, 키가 있을 때만 렌더한다.)
 export default function YoutubeSearchBox({
   onSelect,
 }: {
@@ -13,45 +13,74 @@ export default function YoutubeSearchBox({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [searched, setSearched] = useState(false)
+  // 결과를 선택하면 query를 곡 제목으로 채우는데, 이때 다시 검색이 돌지 않도록 한 번 건너뛴다.
+  const skipNextRef = useRef(false)
 
-  async function handleSearch() {
-    const q = query.trim()
-    if (!q) return
-    setLoading(true)
-    setError(null)
-    try {
-      setResults(await searchYoutube(q))
-      setSearched(true)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '검색에 실패했습니다.')
-    } finally {
-      setLoading(false)
+  // 입력이 멈춘 뒤(디바운스 350ms) 자동 검색한다. 매 타이핑마다 요청하면 API 쿼터가 금방 소진되므로.
+  useEffect(() => {
+    if (skipNextRef.current) {
+      skipNextRef.current = false
+      return
     }
+
+    const q = query.trim()
+    if (!q) {
+      setResults([])
+      setSearched(false)
+      setError(null)
+      setLoading(false)
+      return
+    }
+
+    let cancelled = false
+    setLoading(true)
+    const timer = setTimeout(() => {
+      searchYoutube(q)
+        .then((r) => {
+          if (cancelled) return
+          setResults(r)
+          setSearched(true)
+          setError(null)
+        })
+        .catch((err) => {
+          if (cancelled) return
+          setError(err instanceof Error ? err.message : '검색에 실패했습니다.')
+          setResults([])
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false)
+        })
+    }, 350)
+
+    return () => {
+      cancelled = true
+      clearTimeout(timer)
+    }
+  }, [query])
+
+  function handlePick(r: YoutubeSearchResult) {
+    skipNextRef.current = true
+    setQuery(r.title)
+    setResults([])
+    setSearched(false)
+    setLoading(false)
+    onSelect(r)
   }
 
   return (
     <div className="space-y-3">
-      <div className="flex gap-2">
+      <div className="relative">
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault()
-              handleSearch()
-            }
-          }}
-          placeholder="곡 제목 / 아티스트로 검색"
-          className="glass-input py-2.5"
+          placeholder="곡 제목 / 아티스트를 입력하세요"
+          className="glass-input py-2.5 pr-16"
         />
-        <button
-          type="button"
-          onClick={handleSearch}
-          disabled={loading || !query.trim()}
-          className="btn-primary shrink-0 px-4 py-2.5"
-        >
-          {loading ? '검색 중…' : '검색'}
-        </button>
+        {loading && (
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/40">
+            검색 중…
+          </span>
+        )}
       </div>
 
       {error && <p className="text-sm text-rose-300">{error}</p>}
@@ -66,7 +95,7 @@ export default function YoutubeSearchBox({
             <li key={r.videoId}>
               <button
                 type="button"
-                onClick={() => onSelect(r)}
+                onClick={() => handlePick(r)}
                 className="flex w-full items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-2 text-left transition-colors hover:border-indigo-400/50 hover:bg-white/[0.06]"
               >
                 <img

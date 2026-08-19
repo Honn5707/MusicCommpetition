@@ -31,6 +31,10 @@ public class Member {
     @Column(name = "provider_id", nullable = false)
     private String providerId;
 
+
+    @Column(name = "email", nullable = false)
+    private String email;
+
     @Column(name="password", nullable = true)
     private String password;
 
@@ -56,12 +60,13 @@ public class Member {
     private Long version;
 
     @Builder
-    public Member(Provider provider, String providerId, String nickname, String password) {
+    public Member(Provider provider, String providerId, String nickname, String password, String email) {
         this.provider = provider;
         this.providerId = providerId;
         this.nickname = nickname;
         this.createdAt = LocalDateTime.now();
         this.password = password;
+        this.email = email;
     }
 
     /** PointLedgerService 내부에서만 호출되어야 하는 잔액 캐시 갱신 메서드 */

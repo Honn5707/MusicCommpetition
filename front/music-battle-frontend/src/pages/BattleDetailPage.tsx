@@ -4,6 +4,8 @@ import { deleteBattle, getBattleDetail, joinAsChallenger, surrenderBattle } from
 import { vote } from '../api/votes.ts'
 import { ApiError } from '../api/client.ts'
 import { useAuth } from '../auth/AuthContext.tsx'
+import BattleVideoPlayer from '../components/BattleVideoPlayer.tsx'
+import BattleDeadline from '../components/BattleDeadline.tsx'
 import YoutubeDurationPreview from '../components/YoutubeDurationPreview.tsx'
 import YoutubeSearchBox from '../components/YoutubeSearchBox.tsx'
 import { getFingerprintId } from '../lib/fingerprint.ts'
@@ -35,20 +37,6 @@ function StatusBadge({ status }: { status: MatchStatus }) {
       )}
       {STATUS_LABEL[status]}
     </span>
-  )
-}
-
-function YoutubeEmbed({ videoId, title }: { videoId: string; title: string }) {
-  return (
-    <div className="aspect-video w-full overflow-hidden rounded-xl bg-black/40">
-      <iframe
-        className="h-full w-full"
-        src={`https://www.youtube.com/embed/${videoId}`}
-        title={title}
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-      />
-    </div>
   )
 }
 
@@ -87,7 +75,7 @@ function EntryCard({
           </span>
         )}
       </div>
-      <YoutubeEmbed videoId={videoId} title={songTitle} />
+      <BattleVideoPlayer videoId={videoId} title={songTitle} />
       <div>
         <p className="text-2xl font-semibold text-white sm:text-3xl">{songTitle}</p>
         <p className="mt-1 text-5xl font-bold tracking-tight text-white sm:text-6xl">
@@ -109,6 +97,7 @@ function ChallengerJoinCard({ battleId, onJoined }: { battleId: number; onJoined
   const { isAuthenticated } = useAuth()
   const [videoUrl, setVideoUrl] = useState('')
   const [songTitle, setSongTitle] = useState('')
+  const [channelTitle, setChannelTitle] = useState('')
   const [durationSec, setDurationSec] = useState(0)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -122,10 +111,11 @@ function ChallengerJoinCard({ battleId, onJoined }: { battleId: number; onJoined
     setDurationSec(0)
   }, [videoId])
 
-  // 검색 결과 선택 시: videoId를 URL로 넣어 기존 파싱/재생시간 로직을 태우고 곡 제목을 채운다.
+  // 검색 결과 선택 시: videoId를 URL로 넣어 기존 파싱/재생시간 로직을 태우고 곡 정보를 채운다.
   function handlePickFromSearch(r: YoutubeSearchResult) {
     setVideoUrl(`https://youtu.be/${r.videoId}`)
     setSongTitle(r.title)
+    setChannelTitle(r.channelTitle)
   }
 
   async function handleJoin(e: React.FormEvent) {
@@ -151,6 +141,7 @@ function ChallengerJoinCard({ battleId, onJoined }: { battleId: number; onJoined
       await joinAsChallenger(battleId, {
         videoId,
         songTitle: songTitle.trim(),
+        channelTitle: channelTitle.trim() || undefined,
         thumbnailUrl: youtubeThumbnailUrl(videoId),
         durationSec,
       })
@@ -206,14 +197,32 @@ function ChallengerJoinCard({ battleId, onJoined }: { battleId: number; onJoined
             />
           )}
           {videoId && (
-            <YoutubeDurationPreview key={videoId} videoId={videoId} onDuration={setDurationSec} />
+            <YoutubeDurationPreview
+              key={videoId}
+              videoId={videoId}
+              onDuration={setDurationSec}
+              onMeta={(m) => {
+                setSongTitle(m.title)
+                setChannelTitle(m.author)
+              }}
+            />
           )}
-          <input
-            value={songTitle}
-            onChange={(e) => setSongTitle(e.target.value)}
-            placeholder="곡 제목"
-            className="glass-input py-2.5"
-          />
+          {(songTitle || videoId) && (
+            <div className="space-y-2">
+              <input
+                value={songTitle}
+                onChange={(e) => setSongTitle(e.target.value)}
+                placeholder="곡 제목"
+                className="glass-input py-2.5"
+              />
+              <input
+                value={channelTitle}
+                onChange={(e) => setChannelTitle(e.target.value)}
+                placeholder="아티스트 (선택)"
+                className="glass-input py-2.5"
+              />
+            </div>
+          )}
 
           {error && <p className="text-base text-rose-300">{error}</p>}
 
@@ -362,7 +371,10 @@ export default function BattleDetailPage() {
         <>
           <div className="mb-6 mt-4 flex items-start justify-between gap-4">
             <h1 className="text-2xl font-bold tracking-tight text-white sm:text-4xl">{data.title}</h1>
-            <StatusBadge status={data.matchStatus} />
+            <div className="flex shrink-0 flex-col items-end gap-1.5">
+              <StatusBadge status={data.matchStatus} />
+              <BattleDeadline status={data.matchStatus} votingEndsAt={data.votingEndsAt} />
+            </div>
           </div>
 
           {isSettled && (

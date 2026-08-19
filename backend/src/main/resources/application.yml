@@ -13,7 +13,17 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_APP_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   data:
     redis:
       host: localhost
@@ -52,4 +62,6 @@ jwt:
   expiration-ms: 3600000   # 1시간
 recaptcha:
   secret: ${RECAPTCHA_SECRET:}
-
+email:
+  key-expiration-ms: 10m
+  verify-expiration-ms: 30m

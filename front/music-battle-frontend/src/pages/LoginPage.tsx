@@ -1,10 +1,13 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext.tsx'
 import { ApiError } from '../api/client.ts'
-import Recaptcha, { type RecaptchaHandle } from '../components/Recaptcha.tsx'
+import { confirmEmailCode, sendEmailCode } from '../api/email.ts'
 
 type Mode = 'login' | 'register'
+
+// 이메일 형식 프론트 검증(UX용). 최종 검증은 백엔드가 한다.
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 // 로그인 후 돌아갈 위치. 다른 페이지에서 navigate('/login', { state: { from } }) 로 넘겨준다.
 interface LocationState {
@@ -24,13 +27,78 @@ export default function LoginPage() {
   const [nickname, setNickname] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null)
-  const recaptchaRef = useRef<RecaptchaHandle>(null)
+
+  // ── 이메일 인증 상태 ──
+  const [email, setEmail] = useState('')
+  const [code, setCode] = useState('')
+  const [codeSent, setCodeSent] = useState(false)
+  const [emailVerified, setEmailVerified] = useState(false)
+  const [sendingCode, setSendingCode] = useState(false)
+  const [confirmingCode, setConfirmingCode] = useState(false)
+  // 이메일 인증 관련 안내(성공 흐름) 메시지. 에러는 error에 따로 담는다.
+  const [emailNotice, setEmailNotice] = useState<string | null>(null)
+
+  function resetEmailFlow() {
+    setEmail('')
+    setCode('')
+    setCodeSent(false)
+    setEmailVerified(false)
+    setEmailNotice(null)
+  }
 
   function switchMode(next: Mode) {
     setMode(next)
     setError(null)
-    setRecaptchaToken(null)
+    resetEmailFlow()
+  }
+
+  // 이메일을 수정하면 이전 발송/인증 상태를 초기화한다(다른 주소로 인증되는 혼동 방지).
+  function handleEmailChange(next: string) {
+    setEmail(next)
+    if (codeSent || emailVerified || emailNotice) {
+      setCode('')
+      setCodeSent(false)
+      setEmailVerified(false)
+      setEmailNotice(null)
+    }
+  }
+
+  async function handleSendCode() {
+    const addr = email.trim()
+    if (!EMAIL_RE.test(addr)) {
+      setError('올바른 이메일 형식을 입력해주세요.')
+      return
+    }
+    setSendingCode(true)
+    setError(null)
+    try {
+      await sendEmailCode({ email: addr })
+      setCodeSent(true)
+      setEmailNotice('인증코드가 발송되었습니다. 메일함을 확인해주세요. (10분 이내 유효)')
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : '인증코드 발송에 실패했습니다.')
+    } finally {
+      setSendingCode(false)
+    }
+  }
+
+  async function handleConfirmCode() {
+    const addr = email.trim()
+    if (!code.trim()) {
+      setError('인증코드를 입력해주세요.')
+      return
+    }
+    setConfirmingCode(true)
+    setError(null)
+    try {
+      await confirmEmailCode({ email: addr, code: code.trim() })
+      setEmailVerified(true)
+      setEmailNotice('이메일 인증이 완료되었습니다.')
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : '인증코드 확인에 실패했습니다.')
+    } finally {
+      setConfirmingCode(false)
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -46,13 +114,11 @@ export default function LoginPage() {
       return
     }
     if (mode === 'register') {
+      // 이메일 인증은 강제하지 않는다 — 미인증이면 백엔드가 409로 막아 에러 메시지를 보여준다.
+      // (인증받는 동안에도 아이디/닉네임/비밀번호 입력과 가입 신청이 가능하도록)
       const name = nickname.trim()
       if (name.length < 2) {
         setError('닉네임은 2자 이상이어야 합니다.')
-        return
-      }
-      if (!recaptchaToken) {
-        setError('로봇이 아님을 확인해주세요.')
         return
       }
     }
@@ -61,7 +127,7 @@ export default function LoginPage() {
     setError(null)
     try {
       if (mode === 'register') {
-        await register(id, password, nickname.trim(), recaptchaToken!)
+        await register(id, password, nickname.trim(), email.trim())
       } else {
         await login(id, password)
       }
@@ -69,8 +135,6 @@ export default function LoginPage() {
     } catch (err) {
       setError(err instanceof ApiError ? err.message : '요청에 실패했습니다. 잠시 후 다시 시도해주세요.')
       setSubmitting(false)
-      // 토큰은 1회용이라 실패 후 재시도하려면 체크박스를 다시 눌러야 한다.
-      recaptchaRef.current?.reset()
     }
   }
 
@@ -87,17 +151,72 @@ export default function LoginPage() {
         <p className="mt-1.5 text-sm text-white/50">
           {mode === 'login'
             ? '듣기평가를 만들거나 도전하려면 로그인하세요.'
-            : '아이디와 비밀번호로 계정을 만드세요.'}
+            : '이메일 인증 후 계정을 만드세요.'}
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+          {/* 회원가입: 이메일 인증 블록 */}
+          {mode === 'register' && (
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+              <label className="mb-1.5 block text-sm font-medium text-white/80">이메일</label>
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => handleEmailChange(e.target.value)}
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  disabled={emailVerified}
+                  className="glass-input flex-1 disabled:opacity-60"
+                />
+                <button
+                  type="button"
+                  onClick={handleSendCode}
+                  disabled={sendingCode || emailVerified}
+                  className="btn-ghost shrink-0 whitespace-nowrap px-3 disabled:opacity-40"
+                >
+                  {sendingCode ? '발송 중…' : codeSent ? '재발송' : '인증코드 받기'}
+                </button>
+              </div>
+
+              {/* 코드 입력창: 발송 후 && 미인증일 때만 활성화 */}
+              {codeSent && !emailVerified && (
+                <div className="mt-3 flex gap-2">
+                  <input
+                    inputMode="numeric"
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    placeholder="6자리 인증코드"
+                    maxLength={6}
+                    className="glass-input flex-1 tracking-widest"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleConfirmCode}
+                    disabled={confirmingCode}
+                    className="btn-primary shrink-0 whitespace-nowrap px-4 disabled:opacity-40"
+                  >
+                    {confirmingCode ? '확인 중…' : '확인'}
+                  </button>
+                </div>
+              )}
+
+              {emailVerified && (
+                <p className="mt-2 text-sm font-medium text-emerald-300">✓ 이메일 인증 완료</p>
+              )}
+              {!emailVerified && emailNotice && (
+                <p className="mt-2 text-sm text-indigo-200">{emailNotice}</p>
+              )}
+            </div>
+          )}
+
           <div>
             <label className="mb-1.5 block text-sm font-medium text-white/80">아이디</label>
             <input
               value={providerId}
               onChange={(e) => setProviderId(e.target.value)}
               placeholder="아이디"
-              autoFocus
+              autoFocus={mode === 'login'}
               autoComplete="username"
               className="glass-input"
             />
@@ -128,13 +247,13 @@ export default function LoginPage() {
             />
           </div>
 
-          {mode === 'register' && (
-            <Recaptcha ref={recaptchaRef} onChange={setRecaptchaToken} />
-          )}
-
           {error && <p className="text-sm text-rose-300">{error}</p>}
 
-          <button type="submit" disabled={submitting} className="btn-primary w-full">
+          <button
+            type="submit"
+            disabled={submitting}
+            className="btn-primary w-full disabled:opacity-40"
+          >
             {submitting ? '처리 중…' : mode === 'login' ? '로그인' : '가입하고 시작하기'}
           </button>
         </form>

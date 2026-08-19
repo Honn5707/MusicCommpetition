@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import type { BattleSummaryResponse, MatchStatus } from '../types/api.ts'
+import BattleDeadline from './BattleDeadline.tsx'
 
 // 목록/마이페이지에서 공용으로 쓰는 듣기평가 카드.
 // 커서를 올리면(hover) 상세 정보(참가자별 곡·득표·리드 표시)가 아래로 부드럽게 펼쳐진다.
@@ -89,7 +90,10 @@ export function BattleCard({ battle }: { battle: BattleSummaryResponse }) {
     >
       <div className="flex items-start justify-between gap-3">
         <h2 className="line-clamp-1 text-base font-semibold text-white">{battle.title}</h2>
-        <StatusBadge status={battle.matchStatus} />
+        <div className="flex shrink-0 flex-col items-end gap-1">
+          <StatusBadge status={battle.matchStatus} />
+          <BattleDeadline status={battle.matchStatus} votingEndsAt={battle.votingEndsAt} compact />
+        </div>
       </div>
 
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">

@@ -1,0 +1,101 @@
+### ==========================================================
+### 이메일 인증 + 회원가입 테스트
+### 코드-send 이후, 실제 메일함에서 코드 확인해서 5번 code 값을 手동으로 채워야 함
+### ==========================================================
+
+### 1. [기대: 200] 인증코드 발송
+POST http://localhost:8080/api/email/code-send
+Content-Type: application/json
+
+{
+  "email": "llsshh0777@naver.com"
+}
+
+### 2. [기대: 409] 잘못된 코드로 확인 시도
+POST http://localhost:8080/api/email/code-confirm
+Content-Type: application/json
+
+{
+  "email": "llsshh0777@naver.com",
+  "code": "000000"
+}
+
+### 3. [기대: 200] 진짜 받은 코드로 확인 (메일함에서 확인 후 아래 code 값 교체)
+POST http://localhost:8080/api/email/code-confirm
+Content-Type: application/json
+
+{
+  "email": "llsshh0777@naver.com",
+  "code": "697168"
+}
+
+### 4. [기대: 409] 같은 코드로 다시 확인 시도 (재사용 방지 확인 - 이미 delete됐어야 함)
+POST http://localhost:8080/api/email/code-confirm
+Content-Type: application/json
+
+{
+  "email": "실제받을수있는이메일@gmail.com",
+  "code": "여기에_실제_받은_코드"
+}
+
+### 5. [기대: 409] 이메일 인증 없이 회원가입 시도 (다른 이메일)
+POST http://localhost:8080/api/members/register
+Content-Type: application/json
+
+{
+  "provider": "LOCAL",
+  "providerId": "email-test-01",
+  "nickname": "이메일테스트유저",
+  "password": "password1234",
+  "email": "인증안한이메일@gmail.com",
+  "recaptchaToken": "테스트용가짜토큰"
+}
+
+### 6. [기대: 200] 인증 완료한 이메일로 회원가입 성공
+### (recaptchaToken은 실제 프론트에서 발급받은 진짜 토큰으로 교체해야 함 - .http로는 캡차 자체 테스트 불가)
+POST http://localhost:8080/api/members/register
+Content-Type: application/json
+
+{
+  "provider": "LOCAL",
+  "providerId": "email-test-01",
+  "nickname": "이메일테스트유저",
+  "password": "password1234",
+  "email": "llsshh0777@naver.com"
+}
+
+> {%
+    client.global.set("emailTestMemberId", response.body.id);
+%}
+
+### 7. [기대: 409] 같은 이메일로 재가입 시도 (이메일 중복 방지 확인)
+POST http://localhost:8080/api/email/code-send
+Content-Type: application/json
+
+{
+  "email": "실제받을수있는이메일@gmail.com"
+}
+
+### 8. 위 7번으로 새 코드 받은 뒤, 그 코드로 다시 confirm 성공시키고 나서 register 재시도
+POST http://localhost:8080/api/members/register
+Content-Type: application/json
+
+{
+  "provider": "LOCAL",
+  "providerId": "email-test-02",
+  "nickname": "이메일테스트유저2",
+  "password": "password1234",
+  "email": "실제받을수있는이메일@gmail.com",
+  "recaptchaToken": "여기에_새_토큰"
+}
+### 기대: 409, "이미 존재하는 이메일" 메시지 확인
+
+### 9. [기대: 409] 만료된/존재하지 않는 코드로 확인 시도
+POST http://localhost:8080/api/email/code-confirm
+Content-Type: application/json
+
+{
+  "email": "한번도코드요청안한이메일@gmail.com",
+  "code": "123456"
+}
+### 기대: "인증번호가 만료되었습니다" 메시지

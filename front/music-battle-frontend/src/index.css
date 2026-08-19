@@ -32,17 +32,21 @@
     min-height: 100vh;
     margin: 0;
     color: #f8f7f0; /* 밝은 분필 흰색 */
-    font-family: 'Nanum Pen Script', 'Apple SD Gothic Neo', -apple-system,
+    /* 가독성 우선: 정갈한 분필 손글씨체 Gaegu를 본문 기본으로 사용
+       (기존 Nanum Pen Script는 획이 얇고 흘림이 심해 가독성이 낮았다). */
+    font-family: 'Gaegu', 'Apple SD Gothic Neo', -apple-system,
       BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    /* 손글씨체라 얇게 보이지 않게 크고 굵게 + 획을 살짝 더 두껍게 */
+    /* Gaegu 700은 획이 또렷하고 둥글어 칠판에서도 잘 읽힌다 */
     font-weight: 700;
-    font-size: 1.15rem;
-    letter-spacing: 0.01em;
-    -webkit-text-stroke: 0.18px currentColor;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    letter-spacing: 0.005em;
+    /* 스트로크는 글자를 번지게 해 가독성을 떨어뜨리므로 사용하지 않는다(Gaegu는 이미 충분히 두껍다) */
+    -webkit-text-stroke: 0;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    /* 초록 칠판 위에서 또렷하게 보이도록 어두운 그림자로 대비를 준다 */
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 0 1px rgba(0, 0, 0, 0.35);
+    /* 초록 칠판 위에서 또렷하게 보이도록 옅은 그림자로 대비만 준다(과한 블러는 지양) */
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
     /* 위→아래: 분필가루 노이즈 · 상단 칠판빛 · 좌우 분필 얼룩 · 초록 칠판 바탕 */
     background-color: #33453b;
     background-image:

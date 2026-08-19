@@ -4,18 +4,22 @@ import { loadYoutubeIframeApi } from '../lib/youtubePlayerApi.ts'
 interface Props {
   videoId: string
   onDuration: (durationSec: number) => void
+  // 곡 제목/채널명을 영상 자체에서 가져와 넘긴다 (사용자가 직접 입력하지 않음).
+  onMeta?: (meta: { title: string; author: string }) => void
 }
 
-// 실제 YouTube 플레이어를 붙여서 미리듣기 + 재생시간 자동 감지를 동시에 처리한다.
-// 사용자가 분/초를 직접 입력하지 않고, 영상의 실제 길이를 그대로 쓴다.
-export default function YoutubeDurationPreview({ videoId, onDuration }: Props) {
+// 실제 YouTube 플레이어를 붙여서 미리듣기 + 재생시간/곡정보 자동 감지를 동시에 처리한다.
+// 사용자가 분/초나 곡 제목을 직접 입력하지 않고, 영상의 실제 값을 그대로 쓴다.
+export default function YoutubeDurationPreview({ videoId, onDuration, onMeta }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const playerRef = useRef<YT.Player | null>(null)
   const onDurationRef = useRef(onDuration)
+  const onMetaRef = useRef(onMeta)
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
 
   useEffect(() => {
     onDurationRef.current = onDuration
+    onMetaRef.current = onMeta
   })
 
   useEffect(() => {
@@ -31,6 +35,10 @@ export default function YoutubeDurationPreview({ videoId, onDuration }: Props) {
         events: {
           onReady: (event) => {
             if (cancelled) return
+            const data = event.target.getVideoData?.()
+            if (data?.title) {
+              onMetaRef.current?.({ title: data.title, author: data.author ?? '' })
+            }
             const duration = Math.round(event.target.getDuration())
             if (duration > 0) {
               onDurationRef.current(duration)

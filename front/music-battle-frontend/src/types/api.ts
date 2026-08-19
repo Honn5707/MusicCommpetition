@@ -11,12 +11,25 @@ export interface MemberRegisterRequest {
   // 백엔드가 LOCAL 가입 시 8~16자 비밀번호를 요구한다.
   password: string
   nickname: string
-  // reCAPTCHA v2 체크박스 검증 토큰. 백엔드가 Google siteverify로 재검증 후 실패 시 409를 낸다.
-  recaptchaToken: string
+  // 이메일 인증을 거친 주소. 백엔드가 인증 완료 상태(Redis)를 확인하고,
+  // 미인증이면 409 { error: "이메일 인증을 하지 않았습니다!" }를 낸다.
+  email: string
 }
 
 export interface MemberRegisterResult {
   id: number
+}
+
+// ── 이메일 인증 ────────────────────────────────────────
+// 가입 전 이메일 소유를 확인하는 2단계 플로우.
+// 1) code-send 로 6자리 코드를 발송하고, 2) code-confirm 으로 검증한다.
+export interface EmailCodeSendRequest {
+  email: string
+}
+
+export interface EmailCodeConfirmRequest {
+  email: string
+  code: string
 }
 
 // ── 로그인 ────────────────────────────────────────────
@@ -92,6 +105,12 @@ export interface BattleDetailResponse {
   // 화면 라벨을 "호스트/도전자" 대신 실제 참가자 닉네임으로 표시하기 위한 값.
   hostNickname: string
   challengerNickname: string | null
+  // ↓ 만료시간 표시용(선택). 백엔드가 아직 안 내려주면 undefined라 UI가 자동으로 숨겨진다.
+  // 백엔드 Match 엔티티엔 votingStartsAt/votingEndsAt/createdAt이 이미 있으니
+  // DTO(BattleDetailResponse)와 조립부(BattleService)에 필드만 추가하면 바로 동작한다.
+  // ISO 문자열(LocalDateTime 직렬화, 예: "2026-08-20T15:00:00").
+  votingEndsAt?: string | null
+  createdAt?: string | null
 }
 
 // ── 듣기평가 목록 ─────────────────────────────────────────
@@ -106,6 +125,10 @@ export interface BattleSummaryResponse {
   // 목록/마이페이지에서 "호스트/도전자" 대신 닉네임을 표시하기 위한 값.
   hostNickname: string
   challengerNickname: string | null
+  // ↓ 만료시간 표시용(선택). 백엔드 미제공 시 undefined → UI 자동 숨김.
+  // BattleSummaryResponse DTO와 BattleSummaryAssembler/BattleService 조립부에 추가 필요.
+  votingEndsAt?: string | null
+  createdAt?: string | null
 }
 
 export interface PageResponse<T> {

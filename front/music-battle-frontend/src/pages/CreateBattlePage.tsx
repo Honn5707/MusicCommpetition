@@ -152,32 +152,42 @@ export default function CreateBattlePage() {
           )}
           {videoId && (
             <div className="mt-3">
-              <YoutubeDurationPreview key={videoId} videoId={videoId} onDuration={setDurationSec} />
+              <YoutubeDurationPreview
+                key={videoId}
+                videoId={videoId}
+                onDuration={setDurationSec}
+                onMeta={(m) => {
+                  setSongTitle(m.title)
+                  setChannelTitle(m.author)
+                }}
+              />
             </div>
           )}
         </div>
 
-        <div>
-          <label className="mb-1.5 block text-sm font-medium text-white/80">곡 제목</label>
-          <input
-            value={songTitle}
-            onChange={(e) => setSongTitle(e.target.value)}
-            placeholder="곡 제목을 입력하세요"
-            className="glass-input"
-          />
-        </div>
-
-        <div>
-          <label className="mb-1.5 block text-sm font-medium text-white/80">
-            채널명 <span className="font-normal text-white/30">(선택)</span>
-          </label>
-          <input
-            value={channelTitle}
-            onChange={(e) => setChannelTitle(e.target.value)}
-            placeholder="아티스트/채널 이름"
-            className="glass-input"
-          />
-        </div>
+        {(songTitle || videoId) && (
+          <div className="space-y-3">
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-white/80">곡 제목</label>
+              <input
+                value={songTitle}
+                onChange={(e) => setSongTitle(e.target.value)}
+                placeholder="곡 제목"
+                className="glass-input"
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-white/80">아티스트</label>
+              <input
+                value={channelTitle}
+                onChange={(e) => setChannelTitle(e.target.value)}
+                placeholder="아티스트 (선택)"
+                className="glass-input"
+              />
+            </div>
+            <p className="text-xs text-white/40">YouTube에서 자동으로 채워지며, 직접 수정할 수 있어요.</p>
+          </div>
+        )}
 
         {error && <p className="text-sm text-rose-300">{error}</p>}
 
