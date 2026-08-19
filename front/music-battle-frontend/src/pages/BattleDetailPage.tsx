@@ -8,7 +8,6 @@ import BattleVideoPlayer from '../components/BattleVideoPlayer.tsx'
 import BattleDeadline from '../components/BattleDeadline.tsx'
 import YoutubeDurationPreview from '../components/YoutubeDurationPreview.tsx'
 import YoutubeSearchBox from '../components/YoutubeSearchBox.tsx'
-import { getFingerprintId } from '../lib/fingerprint.ts'
 import { parseYoutubeVideoId, youtubeThumbnailUrl } from '../lib/youtube.ts'
 import { hasYoutubeSearch, type YoutubeSearchResult } from '../lib/youtubeSearch.ts'
 import type { BattleDetailResponse, MatchStatus } from '../types/api.ts'
@@ -289,7 +288,6 @@ export default function BattleDetailPage() {
     try {
       await vote(data.matchId, {
         matchEntryId,
-        fingerprintId: getFingerprintId(),
         useExtraVote: false,
       })
       load() // 점수 갱신

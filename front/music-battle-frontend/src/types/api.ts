@@ -154,7 +154,6 @@ export interface MemberPageResponse {
 // voterMemberId 는 보내지 않는다 — 백엔드가 JWT로 판별하고, 없으면 익명 투표 처리한다.
 export interface VoteRequest {
   matchEntryId: number
-  fingerprintId: string
   useExtraVote: boolean
 }
 

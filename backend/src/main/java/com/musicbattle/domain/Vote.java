@@ -37,22 +37,21 @@ public class Vote {
     @Column(name = "ip_hash", nullable = false)
     private String ipHash;
 
-    @Column(name = "fingerprint_id", nullable = false)
-    private String fingerprintId;
+
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Builder
     public Vote(Long matchId, Long matchEntryId, Long voterMemberId, int weight,
-                boolean extraVote, String ipHash, String fingerprintId) {
+                boolean extraVote, String ipHash) {
         this.matchId = matchId;
         this.matchEntryId = matchEntryId;
         this.voterMemberId = voterMemberId;
         this.weight = weight;
         this.extraVote = extraVote;
         this.ipHash = ipHash;
-        this.fingerprintId = fingerprintId;
+//        this.fingerprintId = fingerprintId;
         this.createdAt = LocalDateTime.now();
     }
 }

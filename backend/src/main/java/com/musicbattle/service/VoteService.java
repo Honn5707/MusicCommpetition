@@ -40,7 +40,7 @@ public class VoteService {
         MatchEntry matchEntry = matchEntryRepository.findById(request.matchEntryId()).orElseThrow(()->new IllegalStateException("투표대상을 찾을 수 없습니다."));
         if(!matchEntry.getMatchId().equals(matchId)) throw new IllegalStateException("존재하지않은 매치에대한 요청이 발생하였습니다!");
 
-        String lockKey = "vote:lock:"+matchId+":"+ipHash+":"+ request.fingerprintId(); // ip중복 투표 방지를 위한 KEY
+        String lockKey = "vote:lock:" + matchId + ":" + ipHash; // ip중복 투표 방지를 위한 KEY
 
         boolean required = redisTemplate.opsForValue().setIfAbsent(lockKey, "1", Duration.ofSeconds(rules.getAntiAbuse().getVoteLockTtlSeconds()));
 
@@ -56,7 +56,7 @@ public class VoteService {
 
         //vote 엔티티 생성
         Vote vote = Vote.builder().matchId(match.getId()).matchEntryId(matchEntry.getId()).voterMemberId(voterMemberId).weight(weight).ipHash(ipHash)
-                .extraVote(false).fingerprintId(request.fingerprintId()).build();
+                .extraVote(false).build();
         voteRepository.save(vote);
 
         return new VoteResult(match.getId(), matchEntry.getId(), voterMemberId, matchEntry.getVoteScore());

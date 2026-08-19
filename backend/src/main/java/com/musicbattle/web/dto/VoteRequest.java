@@ -10,7 +10,6 @@ import jakarta.validation.constraints.NotNull;
  */
 public record VoteRequest(
         @NotNull Long matchEntryId,
-        @NotNull String fingerprintId,
         boolean useExtraVote
 ) {
 }
