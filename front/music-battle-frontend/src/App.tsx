@@ -13,6 +13,8 @@ import BattleDetailPage from './pages/BattleDetailPage.tsx'
 import CreateBattlePage from './pages/CreateBattlePage.tsx'
 import LoginPage from './pages/LoginPage.tsx'
 import MyPage from './pages/MyPage.tsx'
+import OauthCallbackPage from './pages/OauthCallbackPage.tsx'
+import OauthRegisterPage from './pages/OauthRegisterPage.tsx'
 
 // 새 페이지가 로드되거나 다른 페이지로 이동할 때마다 텍스트 입력칸을 모두 비운다.
 // 입력들은 useState('')로 관리되어 이동/새로고침 시 이미 비지만, 브라우저 자동완성이나
@@ -97,6 +99,9 @@ export default function App() {
       <Routes>
         <Route path="/" element={<BattleListPage />} />
         <Route path="/login" element={<LoginPage />} />
+        {/* 소셜 로그인: 구글 콜백 도착지 + 신규 회원 닉네임 확정 */}
+        <Route path="/oauth/:provider/callback" element={<OauthCallbackPage />} />
+        <Route path="/oauth/register" element={<OauthRegisterPage />} />
         <Route path="/battles/new" element={<CreateBattlePage />} />
         <Route path="/battles/:battleId" element={<BattleDetailPage />} />
         <Route path="/mypage" element={<MyPage />} />

@@ -61,9 +61,9 @@ public class MemberService {
         if(request.provider() == Provider.LOCAL) {
             newMember = Member.builder().provider(provider).providerId(providerId).nickname(nickname).password(passwordEncoder.encode(request.password())).email(request.email()).build();
         }
-        else {
-            newMember = Member.builder().provider(provider).providerId(providerId).nickname(nickname).password(null).email(request.email()).build();
-        }
+
+        newMember = Member.builder().provider(provider).providerId(providerId).nickname(nickname).password(null).email(request.email()).build();
+
         memberRepository.save(newMember);
         redisTemplate.delete(emailService.VERIFY_KEY_PREFIX+request.email());
 

@@ -51,6 +51,22 @@ export interface RefreshResponse {
   refreshToken: string
 }
 
+// ── 소셜(OAuth) 로그인 ───────────────────────────────────
+// GET /api/auth/{provider}/callback?code=... 의 응답.
+// - 기존 회원: isNewMember=false, loginResponse에 토큰이 채워진다.
+// - 신규 회원: isNewMember=true, tempToken을 받아 닉네임 확정(POST /api/auth/oauth-register)으로 넘어간다.
+export interface OauthResponse {
+  isNewMember: boolean
+  loginResponse: LoginResponse | null
+  tempToken: string | null
+}
+
+// POST /api/auth/oauth-register 요청. (백엔드 실제 경로는 oauth-register, 필드는 name/tempToken)
+export interface OauthRegisterRequest {
+  tempToken: string
+  name: string
+}
+
 // 회원탈퇴 요청. LOCAL 계정은 비밀번호 확인이 필요하다.
 export interface DeleteAccountRequest {
   password: string

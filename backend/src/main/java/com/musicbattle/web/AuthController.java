@@ -1,11 +1,9 @@
 package com.musicbattle.web;
 
 import com.musicbattle.service.AuthService;
+import com.musicbattle.service.OauthService;
 import com.musicbattle.util.IpUtilities;
-import com.musicbattle.web.dto.LoginRequest;
-import com.musicbattle.web.dto.LoginResponse;
-import com.musicbattle.web.dto.TokenRefreshRequest;
-import com.musicbattle.web.dto.TokenRefreshResponse;
+import com.musicbattle.web.dto.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+    private final OauthService oauthService;
     private final IpUtilities ipUtilities;
 
     @PostMapping("/login")
@@ -37,6 +36,17 @@ public class AuthController {
         TokenRefreshResponse response = authService.updateAccessToken(request);
         return ResponseEntity.ok(response);
     }
+    @GetMapping("google/callback")
+    public ResponseEntity<OauthResponse> oauthLogin(String code){
+       return ResponseEntity.ok(oauthService.googleAuth(code));
 
+
+    }
+    @PostMapping("/oauth-register")
+    public ResponseEntity<LoginResponse> oauthRegister(@Valid @RequestBody OauthRegisterRequest request){
+        return ResponseEntity.ok(oauthService.OauthRegister(request));
+
+
+    }
 
 }

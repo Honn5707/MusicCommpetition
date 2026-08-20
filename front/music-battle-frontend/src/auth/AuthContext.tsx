@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useMemo, useState, type ReactNo
 import { login as loginRequest } from '../api/auth.ts'
 import { registerMember } from '../api/members.ts'
 import { clearAuth, getMemberId, getToken, saveAuth } from './token.ts'
+import type { LoginResponse } from '../types/api.ts'
 
 interface AuthContextValue {
   memberId: number | null
@@ -11,6 +12,8 @@ interface AuthContextValue {
   // 회원가입 후 곧바로 같은 자격증명으로 로그인까지 처리한다.
   // email 은 사전에 이메일 인증(code-send → code-confirm)을 마친 주소여야 한다.
   register: (providerId: string, password: string, nickname: string, email: string) => Promise<void>
+  // 이미 발급받은 토큰(소셜 로그인 콜백/닉네임 확정 응답)으로 로그인 상태를 확정한다.
+  completeLogin: (res: LoginResponse) => void
   logout: () => void
 }
 
@@ -35,14 +38,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [login],
   )
 
+  // 소셜 로그인은 자격증명 없이 서버가 바로 토큰을 내려주므로, 그 토큰을 저장만 하면 된다.
+  const completeLogin = useCallback((res: LoginResponse) => {
+    saveAuth(res.token, res.refreshToken, res.memberId)
+    setMemberId(res.memberId)
+  }, [])
+
   const logout = useCallback(() => {
     clearAuth()
     setMemberId(null)
   }, [])
 
   const value = useMemo<AuthContextValue>(
-    () => ({ memberId, isAuthenticated: memberId !== null, login, register, logout }),
-    [memberId, login, register, logout],
+    () => ({ memberId, isAuthenticated: memberId !== null, login, register, completeLogin, logout }),
+    [memberId, login, register, completeLogin, logout],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

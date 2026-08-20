@@ -54,6 +54,10 @@ public class AuthService {
         return new LoginResponse(token,refreshToken, member.getId());
     }
 
+    private void oAuthCheck(){
+
+    }
+
     //키가 유효한지 검사
     private void checkLoginLock(String lockKey){
         String required =redisTemplate.opsForValue().get(lockKey);
@@ -87,7 +91,7 @@ public class AuthService {
     }
 
     //refreshToken생성 메서드
-    private String createRefreshToken(Long memberId){
+    public String createRefreshToken(Long memberId){
         String refreshToken = UUID.randomUUID().toString(); // 랜덤 문자열
         String refreshKey =  "refresh:"+ refreshToken;
         redisTemplate.opsForValue().set(refreshKey, memberId.toString(),rules.getToken().getRefreshTokenDuration());

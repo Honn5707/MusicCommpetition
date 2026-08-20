@@ -13,3 +13,4 @@ public record MemberRegisterRequest(
         //추후 https로 해쉬화
         @NotBlank @Size(min = 8, max = 16) String password,
         @NotNull @Size(min = 2, max = 20) String nickname){}
+
