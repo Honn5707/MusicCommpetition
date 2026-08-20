@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "vote")
+@Table(name = "vote", indexes = {
+        @Index(name = "idx_vote_match_member", columnList = "match_id, voter_member_id")
+})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Vote {

@@ -40,13 +40,20 @@ public class VoteService {
         MatchEntry matchEntry = matchEntryRepository.findById(request.matchEntryId()).orElseThrow(()->new IllegalStateException("투표대상을 찾을 수 없습니다."));
         if(!matchEntry.getMatchId().equals(matchId)) throw new IllegalStateException("존재하지않은 매치에대한 요청이 발생하였습니다!");
 
-        String lockKey = "vote:lock:" + matchId + ":" + ipHash; // ip중복 투표 방지를 위한 KEY
+        String lockKey;
+        lockKey = "vote:lock:" + matchId + ":" + ipHash; // ip중복 투표 방지를 위한 KEY
+//         lockKey  = "vote:lock:" + voterMemberId + ":" + ipHash;
+
 
         boolean required = redisTemplate.opsForValue().setIfAbsent(lockKey, "1", Duration.ofSeconds(rules.getAntiAbuse().getVoteLockTtlSeconds()));
 
-        if(!required)throw new IllegalStateException("중복 접근을 차단하였습니다.");
 
+        if(!required)throw new IllegalStateException("동일한 IP로는 1회만 투표 가능합니다.");
 
+        if (voterMemberId != null) {
+            boolean alreadyVoted = voteRepository.existsByMatchIdAndVoterMemberId(matchId, voterMemberId);
+            if (alreadyVoted) throw new IllegalStateException("이미 투표하셨습니다.");
+        }
 
         int weight;
         if(voterMemberId != null) weight = rules.getVote().getWeightMember();
