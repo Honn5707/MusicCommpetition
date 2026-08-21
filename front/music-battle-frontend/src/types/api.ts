@@ -81,6 +81,8 @@ export interface CreateBattleRequest {
   channelTitle?: string
   thumbnailUrl?: string
   durationSec: number
+  // 도전자가 참가한 뒤 투표가 열려 있는 시간(초). 백엔드가 필수로 요구한다(@NotNull).
+  voteDurationSec: number
 }
 
 export interface BattleCreateResult {
@@ -121,11 +123,10 @@ export interface BattleDetailResponse {
   // 화면 라벨을 "호스트/도전자" 대신 실제 참가자 닉네임으로 표시하기 위한 값.
   hostNickname: string
   challengerNickname: string | null
-  // ↓ 만료시간 표시용(선택). 백엔드가 아직 안 내려주면 undefined라 UI가 자동으로 숨겨진다.
-  // 백엔드 Match 엔티티엔 votingStartsAt/votingEndsAt/createdAt이 이미 있으니
-  // DTO(BattleDetailResponse)와 조립부(BattleService)에 필드만 추가하면 바로 동작한다.
-  // ISO 문자열(LocalDateTime 직렬화, 예: "2026-08-20T15:00:00").
-  votingEndsAt?: string | null
+  // 투표 종료 시각(ISO 8601, LocalDateTime 직렬화 예: "2026-08-21T15:00:00").
+  // null 이면 아직 투표 시작 전(도전자 대기 중). 상세 응답의 필드명은 voteEndsAt 이다.
+  voteEndsAt: string | null
+  // 배틀 생성 시각(선택). 백엔드 DTO에 아직 없으면 undefined → 표시 생략.
   createdAt?: string | null
 }
 
@@ -141,9 +142,10 @@ export interface BattleSummaryResponse {
   // 목록/마이페이지에서 "호스트/도전자" 대신 닉네임을 표시하기 위한 값.
   hostNickname: string
   challengerNickname: string | null
-  // ↓ 만료시간 표시용(선택). 백엔드 미제공 시 undefined → UI 자동 숨김.
-  // BattleSummaryResponse DTO와 BattleSummaryAssembler/BattleService 조립부에 추가 필요.
-  votingEndsAt?: string | null
+  // 투표 종료 시각(ISO 8601). null 이면 도전자 대기 중.
+  // ※ 목록 응답의 실제 JSON 키는 voteEndsTime 으로, 상세(voteEndsAt)와 이름이 다르다.
+  voteEndsTime: string | null
+  // 배틀 생성 시각(선택). 백엔드 DTO에 아직 없으면 undefined → 표시 생략.
   createdAt?: string | null
 }
 

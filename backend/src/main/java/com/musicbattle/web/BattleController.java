@@ -32,12 +32,12 @@ public class BattleController {
     }
 
     @PostMapping("/{battleId}/challenge")
-    public ResponseEntity<Void> challenge(@PathVariable Long battleId,
+    public ResponseEntity<MatchCreateResult> challenge(@PathVariable Long battleId,
                                           @Valid @RequestBody ChallengeRequest request,
                                           @AuthenticationPrincipal Long challengerId){
         battleService.joinAsChallenger(battleId, request, challengerId);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(battleService.joinAsChallenger(battleId, request, challengerId));
     }
 
     @GetMapping("/{battleId}")

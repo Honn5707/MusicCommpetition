@@ -48,13 +48,13 @@ public class VoteService {
         boolean required = redisTemplate.opsForValue().setIfAbsent(lockKey, "1", Duration.ofSeconds(rules.getAntiAbuse().getVoteLockTtlSeconds()));
 
 
-        if(!required)throw new IllegalStateException("동일한 IP로는 1회만 투표 가능합니다.");
+
 
         if (voterMemberId != null) {
             boolean alreadyVoted = voteRepository.existsByMatchIdAndVoterMemberId(matchId, voterMemberId);
             if (alreadyVoted) throw new IllegalStateException("이미 투표하셨습니다.");
         }
-
+        if(!required)throw new IllegalStateException("동일한 IP로는 1회만 투표 가능합니다.");
         int weight;
         if(voterMemberId != null) weight = rules.getVote().getWeightMember();
         else weight = rules.getVote().getWeightAnonymous();

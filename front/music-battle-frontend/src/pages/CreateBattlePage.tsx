@@ -8,14 +8,28 @@ import YoutubeSearchBox from '../components/YoutubeSearchBox.tsx'
 import { parseYoutubeVideoId, youtubeThumbnailUrl } from '../lib/youtube.ts'
 import { hasYoutubeSearch, type YoutubeSearchResult } from '../lib/youtubeSearch.ts'
 
+// 투표 진행 시간 옵션(초 단위). 도전자가 참가하면 이 시간 동안 투표가 열린다.
+const VOTE_DURATION_OPTIONS = [
+  { label: '5분', sec: 5 * 60 },
+  { label: '30분', sec: 30 * 60 },
+  { label: '60분', sec: 60 * 60 },
+  { label: '6시간', sec: 6 * 60 * 60 },
+  { label: '12시간', sec: 12 * 60 * 60 },
+  { label: '24시간', sec: 24 * 60 * 60 },
+]
+
 export default function CreateBattlePage() {
   const navigate = useNavigate()
   const { isAuthenticated } = useAuth()
 
   const [title, setTitle] = useState('')
+  const [voteDurationSec, setVoteDurationSec] = useState(60 * 60) // 기본 60분
   const [videoUrl, setVideoUrl] = useState('')
   const [songTitle, setSongTitle] = useState('')
+  // 아티스트: 사용자가 직접 입력한 값(channelTitle)과, 곡 선택 시 자동 제안값(artistSuggestion)을 분리한다.
+  // 자동 제안값은 입력칸의 placeholder로만 보여주고, 비워두면 제출 시 이 제안값을 사용한다.
   const [channelTitle, setChannelTitle] = useState('')
+  const [artistSuggestion, setArtistSuggestion] = useState('')
   const [durationSec, setDurationSec] = useState(0)
 
   const [submitting, setSubmitting] = useState(false)
@@ -28,16 +42,17 @@ export default function CreateBattlePage() {
   const videoId = parseYoutubeVideoId(videoUrl)
 
   // 검색 결과 선택 시: videoId를 URL 형태로 넣어 기존 파싱/재생시간 로직을 그대로 태우고,
-  // 곡 제목/채널명을 미리 채워준다(사용자가 이어서 수정 가능).
+  // 곡 제목은 채워주되 아티스트는 placeholder 제안값으로만 넣는다(값은 비워 둠).
   function handlePickFromSearch(r: YoutubeSearchResult) {
     setVideoUrl(`https://youtu.be/${r.videoId}`)
     setSongTitle(r.title)
-    setChannelTitle(r.channelTitle)
+    setArtistSuggestion(r.channelTitle)
   }
 
-  // 링크가 바뀌면 이전 영상의 재생시간을 그대로 들고 있으면 안 되니 초기화한다.
+  // 링크가 바뀌면 이전 영상의 재생시간/아티스트 입력을 그대로 들고 있으면 안 되니 초기화한다.
   useEffect(() => {
     setDurationSec(0)
+    setChannelTitle('')
   }, [videoId])
 
   async function handleCreate(e: React.FormEvent) {
@@ -68,9 +83,11 @@ export default function CreateBattlePage() {
         title: title.trim(),
         videoId,
         songTitle: songTitle.trim(),
-        channelTitle: channelTitle.trim() || undefined,
+        // 직접 입력값이 있으면 그것을, 없으면 자동 제안(아티스트)값을 사용한다.
+        channelTitle: channelTitle.trim() || artistSuggestion.trim() || undefined,
         thumbnailUrl: youtubeThumbnailUrl(videoId),
         durationSec,
+        voteDurationSec,
       })
       navigate(`/battles/${result.battleId}`)
     } catch (err) {
@@ -108,6 +125,27 @@ export default function CreateBattlePage() {
             placeholder="예) 2000년대 발라드 최강곡은?"
             className="glass-input"
           />
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-white/80">투표 시간</label>
+          <div className="flex flex-wrap gap-2">
+            {VOTE_DURATION_OPTIONS.map((o) => (
+              <button
+                key={o.sec}
+                type="button"
+                onClick={() => setVoteDurationSec(o.sec)}
+                className={`rounded-lg border px-3.5 py-1.5 text-sm font-medium transition-colors ${
+                  voteDurationSec === o.sec
+                    ? 'border-indigo-400/70 bg-indigo-500/20 text-white'
+                    : 'border-white/20 text-white/60 hover:border-white/40 hover:text-white'
+                }`}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
+          <p className="mt-1.5 text-xs text-white/40">도전자가 참가하면 이 시간 동안 투표가 진행됩니다.</p>
         </div>
 
         <div>
@@ -158,7 +196,7 @@ export default function CreateBattlePage() {
                 onDuration={setDurationSec}
                 onMeta={(m) => {
                   setSongTitle(m.title)
-                  setChannelTitle(m.author)
+                  setArtistSuggestion(m.author)
                 }}
               />
             </div>
@@ -181,11 +219,13 @@ export default function CreateBattlePage() {
               <input
                 value={channelTitle}
                 onChange={(e) => setChannelTitle(e.target.value)}
-                placeholder="아티스트 (선택)"
+                placeholder={artistSuggestion || '아티스트 (선택)'}
                 className="glass-input"
               />
             </div>
-            <p className="text-xs text-white/40">YouTube에서 자동으로 채워지며, 직접 수정할 수 있어요.</p>
+            <p className="text-xs text-white/40">
+              곡을 선택하면 아티스트가 안내(placeholder)로 채워져요. 비워두면 그대로 사용되고, 직접 입력하면 그 값이 쓰여요.
+            </p>
           </div>
         )}
 

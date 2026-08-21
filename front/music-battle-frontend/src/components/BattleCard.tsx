@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import type { BattleSummaryResponse, MatchStatus } from '../types/api.ts'
 import BattleDeadline from './BattleDeadline.tsx'
+import { formatDateTime } from '../lib/datetime.ts'
 
 // 목록/마이페이지에서 공용으로 쓰는 듣기평가 카드.
 // 커서를 올리면(hover) 상세 정보(참가자별 곡·득표·리드 표시)가 아래로 부드럽게 펼쳐진다.
@@ -92,7 +93,10 @@ export function BattleCard({ battle }: { battle: BattleSummaryResponse }) {
         <h2 className="line-clamp-1 text-base font-semibold text-white">{battle.title}</h2>
         <div className="flex shrink-0 flex-col items-end gap-1">
           <StatusBadge status={battle.matchStatus} />
-          <BattleDeadline status={battle.matchStatus} votingEndsAt={battle.votingEndsAt} compact />
+          <BattleDeadline status={battle.matchStatus} voteEndsAt={battle.voteEndsTime} compact />
+          {battle.createdAt && (
+            <span className="text-[11px] text-white/35">{formatDateTime(battle.createdAt)} 생성</span>
+          )}
         </div>
       </div>
 

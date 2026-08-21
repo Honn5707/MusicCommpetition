@@ -30,9 +30,9 @@ public class BattleSummaryAssembler {
 
         String hostNickname = nicknameOf(hostPlayer.getSubmitterMemberId());
 
-        if(challengerPlayer==null) return new BattleSummaryResponse(match.getBattleId(), battle.getTitle(), hostPlayer.getSongTitle(), null, hostPlayer.getVoteScore(), 0, match.getStatus(), hostNickname, null);
+        if(challengerPlayer==null) return new BattleSummaryResponse(match.getBattleId(), battle.getTitle(), hostPlayer.getSongTitle(), null, hostPlayer.getVoteScore(), 0, match.getStatus(), hostNickname, null, null,match.getCreatedAt());
         String challengerNickname = nicknameOf(challengerPlayer.getSubmitterMemberId());
-        return new BattleSummaryResponse(match.getBattleId(), battle.getTitle(), hostPlayer.getSongTitle(), challengerPlayer.getSongTitle(), hostPlayer.getVoteScore(), challengerPlayer.getVoteScore(), match.getStatus(), hostNickname, challengerNickname);
+        return new BattleSummaryResponse(match.getBattleId(), battle.getTitle(), hostPlayer.getSongTitle(), challengerPlayer.getSongTitle(), hostPlayer.getVoteScore(), challengerPlayer.getVoteScore(), match.getStatus(), hostNickname, challengerNickname, match.getVotingEndsAt(), match.getCreatedAt());
 
     }
 

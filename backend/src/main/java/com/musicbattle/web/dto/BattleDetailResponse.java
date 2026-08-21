@@ -2,6 +2,8 @@ package com.musicbattle.web.dto;
 
 import com.musicbattle.domain.enums.MatchStatus;
 
+import java.time.LocalDateTime;
+
 public record BattleDetailResponse(
         String title,
         Long matchId,
@@ -21,5 +23,7 @@ public record BattleDetailResponse(
         Long challengerMemberId,
         // 화면에 "호스트/도전자" 대신 실제 참가자 닉네임을 표시하기 위한 값.
         String hostNickname,
-        String challengerNickname
+        String challengerNickname,
+        LocalDateTime voteEndsAt,
+        LocalDateTime createdAt
 ) {}

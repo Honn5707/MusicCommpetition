@@ -14,7 +14,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.annotation.Native;import java.util.List;
+import java.lang.annotation.Native;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.musicbattle.domain.enums.BattleMode.ONE_VS_ONE;
 
@@ -38,7 +40,7 @@ public class BattleService {
 
 
         Battle battle = Battle.builder()
-                .voteWindowSec(rules.getOneVsOne().getDefaultVoteWindowSeconds())
+                .voteWindowSec(request.voteDurationSec())
                 .mode(ONE_VS_ONE)
                 .hostMemberId(hostMemberId)
                 .title(request.title())
@@ -61,11 +63,11 @@ public class BattleService {
                 .build();
         matchEntryRepository.save(matchEntry);
 
-        return new BattleCreateResult(battle.getId(), battle.getTitle());
+        return new BattleCreateResult(battle.getId(), battle.getTitle(), match.getCreatedAt());
     }
 
     @Transactional
-    public void joinAsChallenger(Long battleId, ChallengeRequest request, Long challengerId) {
+    public MatchCreateResult joinAsChallenger(Long battleId, ChallengeRequest request, Long challengerId) {
         Battle battle = battleRepository.findById(battleId)
                 .orElseThrow(() -> new IllegalStateException("방을 찾을 수 없습니다"));
         memberRepository.findById(challengerId)
@@ -99,6 +101,9 @@ public class BattleService {
                 .build();
         matchEntryRepository.save(matchEntry);
         matchLifecycleService.openVoting(match.getId(), battle.getVoteWindowSec());
+
+
+        return new MatchCreateResult(match.getVotingEndsAt());
     }
     @Transactional(readOnly=true)
     public BattleDetailResponse getBattleDetail(Long battleId) {
@@ -152,7 +157,7 @@ public class BattleService {
                 hostVideoId, hostSongTitle, challengerVideoId, challengerSongTitle,
                 hostScore, challengerScore, winner, hostPlayer.getId(), challengerEntryId,
                 battle.getHostMemberId(), challengerMemberId,
-                hostNickname, challengerNickname);
+                hostNickname, challengerNickname, match.getVotingEndsAt(),match.getCreatedAt());
     }
 
 
@@ -183,7 +188,9 @@ public class BattleService {
                         challengerPlayer.getVoteScore(),
                         match.getStatus(),
                         hostNickname,
-                        nicknameOf(challengerPlayer.getSubmitterMemberId()));
+                        nicknameOf(challengerPlayer.getSubmitterMemberId()),
+                        match.getVotingEndsAt(),
+                        match.getCreatedAt());
             }
             return new BattleSummaryResponse(battle.getId(),
                     battle.getTitle(),
@@ -193,7 +200,9 @@ public class BattleService {
                     0,
                     match.getStatus(),
                     hostNickname,
-                    null);
+                    null,
+                    null,
+                    match.getCreatedAt());
 
         }).toList();
         return new PageResponse<BattleSummaryResponse>(pageReturn, battlePage.getNumber(), battlePage.getSize(), battlePage.getTotalElements(), battlePage.getTotalPages(), battlePage.hasNext());

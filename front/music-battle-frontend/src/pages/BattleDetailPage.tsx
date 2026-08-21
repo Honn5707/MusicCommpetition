@@ -6,6 +6,7 @@ import { ApiError } from '../api/client.ts'
 import { useAuth } from '../auth/AuthContext.tsx'
 import BattleVideoPlayer from '../components/BattleVideoPlayer.tsx'
 import BattleDeadline from '../components/BattleDeadline.tsx'
+import { formatDateTime } from '../lib/datetime.ts'
 import YoutubeDurationPreview from '../components/YoutubeDurationPreview.tsx'
 import YoutubeSearchBox from '../components/YoutubeSearchBox.tsx'
 import { parseYoutubeVideoId, youtubeThumbnailUrl } from '../lib/youtube.ts'
@@ -96,7 +97,10 @@ function ChallengerJoinCard({ battleId, onJoined }: { battleId: number; onJoined
   const { isAuthenticated } = useAuth()
   const [videoUrl, setVideoUrl] = useState('')
   const [songTitle, setSongTitle] = useState('')
+  // 아티스트: 직접 입력값(channelTitle)과 곡 선택 시 자동 제안값(artistSuggestion)을 분리.
+  // 제안값은 placeholder로만 보여주고, 비워두면 제출 시 이 값을 사용한다.
   const [channelTitle, setChannelTitle] = useState('')
+  const [artistSuggestion, setArtistSuggestion] = useState('')
   const [durationSec, setDurationSec] = useState(0)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -108,13 +112,14 @@ function ChallengerJoinCard({ battleId, onJoined }: { battleId: number; onJoined
 
   useEffect(() => {
     setDurationSec(0)
+    setChannelTitle('')
   }, [videoId])
 
-  // 검색 결과 선택 시: videoId를 URL로 넣어 기존 파싱/재생시간 로직을 태우고 곡 정보를 채운다.
+  // 검색 결과 선택 시: 곡 제목은 채우고, 아티스트는 placeholder 제안값으로만 넣는다.
   function handlePickFromSearch(r: YoutubeSearchResult) {
     setVideoUrl(`https://youtu.be/${r.videoId}`)
     setSongTitle(r.title)
-    setChannelTitle(r.channelTitle)
+    setArtistSuggestion(r.channelTitle)
   }
 
   async function handleJoin(e: React.FormEvent) {
@@ -140,7 +145,7 @@ function ChallengerJoinCard({ battleId, onJoined }: { battleId: number; onJoined
       await joinAsChallenger(battleId, {
         videoId,
         songTitle: songTitle.trim(),
-        channelTitle: channelTitle.trim() || undefined,
+        channelTitle: channelTitle.trim() || artistSuggestion.trim() || undefined,
         thumbnailUrl: youtubeThumbnailUrl(videoId),
         durationSec,
       })
@@ -202,7 +207,7 @@ function ChallengerJoinCard({ battleId, onJoined }: { battleId: number; onJoined
               onDuration={setDurationSec}
               onMeta={(m) => {
                 setSongTitle(m.title)
-                setChannelTitle(m.author)
+                setArtistSuggestion(m.author)
               }}
             />
           )}
@@ -217,7 +222,7 @@ function ChallengerJoinCard({ battleId, onJoined }: { battleId: number; onJoined
               <input
                 value={channelTitle}
                 onChange={(e) => setChannelTitle(e.target.value)}
-                placeholder="아티스트 (선택)"
+                placeholder={artistSuggestion || '아티스트 (선택)'}
                 className="glass-input py-2.5"
               />
             </div>
@@ -371,7 +376,10 @@ export default function BattleDetailPage() {
             <h1 className="text-2xl font-bold tracking-tight text-white sm:text-4xl">{data.title}</h1>
             <div className="flex shrink-0 flex-col items-end gap-1.5">
               <StatusBadge status={data.matchStatus} />
-              <BattleDeadline status={data.matchStatus} votingEndsAt={data.votingEndsAt} />
+              <BattleDeadline status={data.matchStatus} voteEndsAt={data.voteEndsAt} />
+              {data.createdAt && (
+                <span className="text-xs text-white/35">{formatDateTime(data.createdAt)} 생성</span>
+              )}
             </div>
           </div>
 

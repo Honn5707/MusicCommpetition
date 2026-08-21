@@ -97,7 +97,10 @@ export default function App() {
       <InputResetter />
       <NavBar />
       <Routes>
-        <Route path="/" element={<BattleListPage />} />
+        {/* 상태별 목록 페이지 (기본 = 투표중) */}
+        <Route path="/" element={<BattleListPage filter="VOTING" />} />
+        <Route path="/recruiting" element={<BattleListPage filter="RECRUITING" />} />
+        <Route path="/finished" element={<BattleListPage filter="FINISHED" />} />
         <Route path="/login" element={<LoginPage />} />
         {/* 소셜 로그인: 구글 콜백 도착지 + 신규 회원 닉네임 확정 */}
         <Route path="/oauth/:provider/callback" element={<OauthCallbackPage />} />
