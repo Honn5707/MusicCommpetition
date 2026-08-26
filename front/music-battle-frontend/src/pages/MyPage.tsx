@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { deleteAccount, getMyPage } from '../api/members.ts'
 import { ApiError } from '../api/client.ts'
 import { useAuth } from '../auth/AuthContext.tsx'
@@ -173,6 +173,12 @@ export default function MyPage() {
               <div>
                 <p className="text-xs font-semibold uppercase tracking-widest text-white/40">마이페이지</p>
                 <h1 className="mt-0.5 text-2xl font-bold tracking-tight text-white">{data.nickname}</h1>
+                <Link
+                  to="/follows"
+                  className="mt-1 inline-block text-sm font-medium text-indigo-300 underline-offset-2 hover:underline"
+                >
+                  팔로워 · 팔로잉
+                </Link>
               </div>
             </div>
             <div className="text-right">

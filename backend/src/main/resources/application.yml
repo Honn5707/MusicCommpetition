@@ -52,6 +52,8 @@ battle:
     default-vote-window-seconds: 43200  # 12시간
   anti-abuse:
     vote-lock-ttl-seconds: 86400        # 24시간
+  message:
+    message-lock-duration: 1m
 
 logging:
   level:

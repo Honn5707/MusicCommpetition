@@ -10,6 +10,8 @@ interface ImportMetaEnv {
   // 구글 리다이렉트 URI. 미설정 시 현재 출처의 /oauth/google/callback 을 쓴다.
   // 백엔드 oauth.redirect-uri 및 구글 콘솔 등록 URI와 반드시 동일해야 한다.
   readonly VITE_GOOGLE_REDIRECT_URI?: "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"
+  // 실시간 댓글 STOMP 브로커 URL. 미설정 시 ws://localhost:8080/ws 를 쓴다.
+  readonly VITE_WS_URL?: string
 }
 
 interface ImportMeta {

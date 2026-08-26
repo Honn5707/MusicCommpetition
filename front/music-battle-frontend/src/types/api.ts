@@ -182,6 +182,27 @@ export interface VoteResult {
   score: number
 }
 
+// ── 팔로우 ────────────────────────────────────────────
+// 팔로워/팔로잉 목록 아이템. 백엔드 FollowerListResponse/FollowingListResponse와 동일(닉네임 + memberId).
+export interface FollowUserResponse {
+  nickname: string
+  memberId: number
+}
+
+// ── 배틀 댓글(실시간 채팅) ────────────────────────────
+// "REST는 데이터, 웹소켓은 신호" — 작성/조회는 REST, 웹소켓은 "새 댓글 발생" 신호만 전달한다.
+export interface BattleCommentResponse {
+  id: number
+  comment: string
+  nickname: string
+  // 서버 LocalDateTime 직렬화(ISO, 예: "2026-08-23T10:00:00"). 증분 조회 afterTime으로 되돌려 보낸다.
+  sendTime: string
+}
+
+export interface BattleCommentRequest {
+  comment: string
+}
+
 // ── 공통 에러 응답 (GlobalExceptionHandler 형식) ──────
 export interface ApiErrorBody {
   error: string

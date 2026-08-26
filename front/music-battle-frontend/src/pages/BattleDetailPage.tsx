@@ -6,6 +6,7 @@ import { ApiError } from '../api/client.ts'
 import { useAuth } from '../auth/AuthContext.tsx'
 import BattleVideoPlayer from '../components/BattleVideoPlayer.tsx'
 import BattleDeadline from '../components/BattleDeadline.tsx'
+import BattleComments from '../components/BattleComments.tsx'
 import { formatDateTime } from '../lib/datetime.ts'
 import YoutubeDurationPreview from '../components/YoutubeDurationPreview.tsx'
 import YoutubeSearchBox from '../components/YoutubeSearchBox.tsx'
@@ -44,6 +45,7 @@ function StatusBadge({ status }: { status: MatchStatus }) {
 // VOTING 상태에서는 onVote가 주어져 "투표하기" 버튼을 렌더한다.
 function EntryCard({
   label,
+  profileMemberId,
   songTitle,
   videoId,
   score,
@@ -53,6 +55,8 @@ function EntryCard({
   voting,
 }: {
   label: string
+  // 참가자 프로필로 이동하기 위한 memberId(있으면 닉네임이 링크가 된다).
+  profileMemberId?: number | null
   songTitle: string
   videoId: string
   score: number
@@ -68,7 +72,17 @@ function EntryCard({
       } ${dimmed ? 'opacity-50' : ''}`}
     >
       <div className="flex items-center justify-between">
-        <span className="text-xl font-semibold tracking-wide text-white/80 sm:text-2xl">{label}</span>
+        {profileMemberId != null ? (
+          <Link
+            to={`/members/${profileMemberId}`}
+            state={{ nickname: label }}
+            className="text-xl font-semibold tracking-wide text-white/80 underline-offset-4 transition-colors hover:text-white hover:underline sm:text-2xl"
+          >
+            {label}
+          </Link>
+        ) : (
+          <span className="text-xl font-semibold tracking-wide text-white/80 sm:text-2xl">{label}</span>
+        )}
         {isWinner && (
           <span className="rounded-full bg-indigo-500 px-3 py-1 text-sm font-semibold text-white">
             WINNER
@@ -349,7 +363,7 @@ export default function BattleDetailPage() {
   const canSurrender = isParticipant && isVoting && !!data?.challengerVideoId
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-10">
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
       <Link to="/" className="text-base text-white/40 transition-colors hover:text-white">
         ← 목록으로
       </Link>
@@ -405,22 +419,27 @@ export default function BattleDetailPage() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 items-stretch gap-5 md:grid-cols-2">
-            <EntryCard
-              label={data.hostNickname}
-              songTitle={data.hostSongTitle}
-              videoId={data.hostVideoId}
-              score={data.hostScore}
-              isWinner={data.matchStatus === 'FINISHED' && data.winner === 'host'}
-              dimmed={data.matchStatus === 'FINISHED' && data.winner === 'challenger'}
-              onVote={isVoting ? () => handleVote('host') : undefined}
-              voting={votingSide === 'host'}
-            />
+          {/* 좌: 곡 + 액션 / 우: 실시간 댓글 — 큰 화면에서 한눈에 보이도록 나란히 배치 */}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
+            <div className="min-w-0">
+              <div className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2">
+                <EntryCard
+                  label={data.hostNickname}
+                  profileMemberId={data.hostMemberId}
+                  songTitle={data.hostSongTitle}
+                  videoId={data.hostVideoId}
+                  score={data.hostScore}
+                  isWinner={data.matchStatus === 'FINISHED' && data.winner === 'host'}
+                  dimmed={data.matchStatus === 'FINISHED' && data.winner === 'challenger'}
+                  onVote={isVoting ? () => handleVote('host') : undefined}
+                  voting={votingSide === 'host'}
+                />
 
-            {data.challengerVideoId && data.challengerSongTitle ? (
-              <EntryCard
-                label={data.challengerNickname ?? '참가자'}
-                songTitle={data.challengerSongTitle}
+                {data.challengerVideoId && data.challengerSongTitle ? (
+                  <EntryCard
+                    label={data.challengerNickname ?? '참가자'}
+                    profileMemberId={data.challengerMemberId}
+                    songTitle={data.challengerSongTitle}
                 videoId={data.challengerVideoId}
                 score={data.challengerScore}
                 isWinner={data.matchStatus === 'FINISHED' && data.winner === 'challenger'}
@@ -475,6 +494,12 @@ export default function BattleDetailPage() {
               )}
             </div>
           )}
+            </div>
+
+            <div className="lg:sticky lg:top-20">
+              <BattleComments battleId={id} />
+            </div>
+          </div>
         </>
       )}
     </div>

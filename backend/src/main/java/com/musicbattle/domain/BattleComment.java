@@ -2,6 +2,7 @@ package com.musicbattle.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,4 +29,11 @@ public class BattleComment {
     @Column(name = "comment", nullable = false)
     private String comment;
 
+    @Builder
+    public BattleComment(Long battleId, Long senderId, String comment){
+        this.battleId = battleId;
+        this.senderId = senderId;
+        this.comment = comment;
+        sendTime = LocalDateTime.now();
+    }
 }

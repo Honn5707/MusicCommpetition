@@ -21,10 +21,14 @@ public class StompInterceptor implements ChannelInterceptor {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
         if(StompCommand.CONNECT.equals(accessor.getCommand())){
-            String token = accessor.getFirstNativeHeader("Authorization");
-            Long memberId = jwtTokenProvider.validateToken(token);
-            Map<String, Object> session = accessor.getSessionAttributes();
-            session.put("memberId", memberId);
+            String header = accessor.getFirstNativeHeader("Authorization");
+            String token = header != null && header.startsWith("Bearer ") ? header.substring(7) : header;
+            if(token != null && !token.isBlank()) {
+                Long memberId = jwtTokenProvider.validateToken(token);
+                Map<String, Object> session = accessor.getSessionAttributes();
+                session.put("memberId", memberId);
+            }
+
         }
 
         return message;

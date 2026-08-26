@@ -25,6 +25,7 @@ public class BattleRuleProperties {
     private Recruiting recruiting = new Recruiting();
     private AntiAbuse antiAbuse = new AntiAbuse();
     private Token token = new Token();
+    private Message message = new Message();
     @Getter @Setter
     public static class Vote {
         private int weightAnonymous;
@@ -65,5 +66,10 @@ public class BattleRuleProperties {
     @Getter @Setter
     public static class AntiAbuse {
         private int voteLockTtlSeconds;
+    }
+
+    @Getter @Setter
+    public static class Message{
+        private Duration messageLockDuration;
     }
 }
