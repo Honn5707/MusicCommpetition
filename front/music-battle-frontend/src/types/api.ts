@@ -72,7 +72,7 @@ export interface DeleteAccountRequest {
   password: string
 }
 
-// ── 듣기평가 생성 / 참가 ──────────────────────────────────
+// ── 노래대결 생성 / 참가 ──────────────────────────────────
 // hostMemberId 는 보내지 않는다 — 백엔드가 JWT(@AuthenticationPrincipal)로 판별한다.
 export interface CreateBattleRequest {
   title: string
@@ -130,7 +130,7 @@ export interface BattleDetailResponse {
   createdAt?: string | null
 }
 
-// ── 듣기평가 목록 ─────────────────────────────────────────
+// ── 노래대결 목록 ─────────────────────────────────────────
 export interface BattleSummaryResponse {
   battleId: number
   title: string
@@ -159,7 +159,7 @@ export interface PageResponse<T> {
 }
 
 // ── 마이페이지 ────────────────────────────────────────
-// 진행 중 듣기평가는 개수가 적어 전체 리스트로, 종료 듣기평가는 페이지네이션으로 내려준다.
+// 진행 중 노래대결은 개수가 적어 전체 리스트로, 종료 노래대결은 페이지네이션으로 내려준다.
 // 필드명은 백엔드 MemberPageResponse record와 그대로 대응한다.
 export interface MemberPageResponse {
   currentBattleSummaryResponse: BattleSummaryResponse[]
@@ -187,6 +187,16 @@ export interface VoteResult {
 export interface FollowUserResponse {
   nickname: string
   memberId: number
+}
+
+// GET /api/members/{targetId}/profile 응답. 비로그인 조회 시 isFollowing은 항상 false.
+export interface MemberProfileResponse {
+  // 진행 중인 노래대결(백엔드 키 이름 그대로 currentBattleSummaryResponse).
+  currentBattleSummaryResponse: BattleSummaryResponse[]
+  nickname: string
+  followerCount: number
+  followingCount: number
+  isFollowing: boolean
 }
 
 // ── 배틀 댓글(실시간 채팅) ────────────────────────────

@@ -28,7 +28,7 @@ public class SecurityConfig {
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "인증이 필요합니다");
                 }))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/api/battles", "/api/battles/*","/api/battles/{battleId}/comments").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/battles", "/api/battles/*","/api/battles/{battleId}/comments", "/api/members/{targetId}/profile").permitAll()
                         .requestMatchers("/api/members/register", "/api/email/*", "/api/auth/*", "/api/auth/**", "/api/matches/*/votes", "/ws/**").permitAll()
                         .anyRequest().authenticated()
                 )

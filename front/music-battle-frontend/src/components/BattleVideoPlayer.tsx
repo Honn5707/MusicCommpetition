@@ -107,7 +107,7 @@ export default function BattleVideoPlayer({ videoId, title }: Props) {
       <div className="pointer-events-none h-full w-full" ref={containerRef} />
 
       {!ready && (
-        <div className="absolute inset-0 flex items-center justify-center text-sm text-white/50">
+        <div className="absolute inset-0 flex items-center justify-center text-sm text-gray-500">
           불러오는 중…
         </div>
       )}
@@ -125,7 +125,7 @@ export default function BattleVideoPlayer({ videoId, title }: Props) {
             value={volume}
             onChange={(e) => handleVolumeChange(Number(e.target.value))}
             aria-label="음량"
-            className="h-1 w-24 cursor-pointer accent-indigo-300"
+            className="h-1 w-24 cursor-pointer accent-gray-800"
           />
         </div>
       )}

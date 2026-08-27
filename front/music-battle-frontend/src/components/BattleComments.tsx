@@ -138,27 +138,27 @@ export default function BattleComments({ battleId }: { battleId: number }) {
 
   return (
     <section className="glass flex flex-col p-5">
-      <h2 className="mb-3 text-lg font-semibold text-white">실시간 댓글</h2>
+      <h2 className="mb-3 text-lg font-semibold text-gray-900">실시간 댓글</h2>
 
       <div ref={scrollRef} className="flex max-h-80 min-h-40 flex-col gap-3 overflow-y-auto pr-1">
         {comments.length === 0 ? (
-          <p className="my-auto text-center text-sm text-white/40">
+          <p className="my-auto text-center text-sm text-gray-400">
             아직 댓글이 없어요. 첫 댓글을 남겨보세요.
           </p>
         ) : (
           comments.map((c) => (
             <div key={c.id} className="flex flex-col gap-0.5">
               <div className="flex items-baseline gap-2">
-                <span className="text-sm font-semibold text-indigo-200">{c.nickname}</span>
-                <span className="text-xs text-white/35">{formatTime(c.sendTime)}</span>
+                <span className="text-sm font-semibold text-gray-700">{c.nickname}</span>
+                <span className="text-xs text-gray-400">{formatTime(c.sendTime)}</span>
               </div>
-              <p className="whitespace-pre-wrap break-words text-sm text-white/85">{c.comment}</p>
+              <p className="whitespace-pre-wrap break-words text-sm text-gray-700">{c.comment}</p>
             </div>
           ))
         )}
       </div>
 
-      {error && <p className="mt-2 text-sm text-rose-300">{error}</p>}
+      {error && <p className="mt-2 text-sm text-gray-600">{error}</p>}
 
       {isAuthenticated ? (
         <form onSubmit={handleSend} className="mt-3 flex gap-2">
@@ -178,12 +178,12 @@ export default function BattleComments({ battleId }: { battleId: number }) {
           </button>
         </form>
       ) : (
-        <div className="mt-3 rounded-lg border border-white/15 bg-white/[0.03] px-4 py-3 text-center text-sm text-white/50">
+        <div className="mt-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-center text-sm text-gray-500">
           댓글을 작성하려면{' '}
           <Link
             to="/login"
             state={{ from: location.pathname }}
-            className="font-medium text-fuchsia-300 hover:underline"
+            className="font-medium text-gray-600 hover:underline"
           >
             로그인
           </Link>

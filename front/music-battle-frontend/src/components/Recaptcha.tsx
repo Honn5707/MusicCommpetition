@@ -46,7 +46,7 @@ const Recaptcha = forwardRef<RecaptchaHandle, RecaptchaProps>(function Recaptcha
   }, [siteKey, onChange])
 
   if (!siteKey) {
-    return <p className="text-sm text-amber-300">VITE_RECAPTCHA_SITE_KEY가 설정되지 않았습니다.</p>
+    return <p className="text-sm text-amber-600">VITE_RECAPTCHA_SITE_KEY가 설정되지 않았습니다.</p>
   }
 
   return <div ref={containerRef} />

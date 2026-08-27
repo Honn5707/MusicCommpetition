@@ -65,7 +65,7 @@ export default function BattleDeadline({ status, voteEndsAt, compact = false }: 
   return (
     <span
       className={`inline-flex items-center gap-1 whitespace-nowrap ${compact ? 'text-xs' : 'text-sm'} ${
-        tone === 'live' ? 'font-medium text-amber-200' : 'text-white/45'
+        tone === 'live' ? 'font-medium text-amber-600' : 'text-gray-400'
       }`}
       title={voteEndsAt ? new Date(voteEndsAt).toLocaleString() : undefined}
     >

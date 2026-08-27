@@ -27,14 +27,14 @@ function StatusBadge({ status }: { status: MatchStatus }) {
     <span
       className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium tracking-wide ${
         isLive
-          ? 'border border-indigo-400/40 bg-indigo-500/15 text-indigo-100'
+          ? 'border border-gray-300 bg-gray-100 text-gray-700'
           : status === 'CALCULATING'
-            ? 'border border-white/20 text-white/70'
-            : 'border border-white/10 text-white/40'
+            ? 'border border-gray-300 text-gray-600'
+            : 'border border-gray-200 text-gray-400'
       }`}
     >
       {status === 'VOTING' && (
-        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-indigo-300" />
+        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-gray-400" />
       )}
       {STATUS_LABEL[status]}
     </span>
@@ -68,7 +68,7 @@ function EntryCard({
   return (
     <div
       className={`glass flex flex-col gap-4 p-5 transition-all ${
-        isWinner ? 'border-indigo-400/70' : ''
+        isWinner ? 'border-gray-400' : ''
       } ${dimmed ? 'opacity-50' : ''}`}
     >
       <div className="flex items-center justify-between">
@@ -76,25 +76,25 @@ function EntryCard({
           <Link
             to={`/members/${profileMemberId}`}
             state={{ nickname: label }}
-            className="text-xl font-semibold tracking-wide text-white/80 underline-offset-4 transition-colors hover:text-white hover:underline sm:text-2xl"
+            className="text-xl font-semibold tracking-wide text-gray-700 underline-offset-4 transition-colors hover:text-gray-900 hover:underline sm:text-2xl"
           >
             {label}
           </Link>
         ) : (
-          <span className="text-xl font-semibold tracking-wide text-white/80 sm:text-2xl">{label}</span>
+          <span className="text-xl font-semibold tracking-wide text-gray-700 sm:text-2xl">{label}</span>
         )}
         {isWinner && (
-          <span className="rounded-full bg-indigo-500 px-3 py-1 text-sm font-semibold text-white">
+          <span className="rounded-full bg-gray-900 px-3 py-1 text-sm font-semibold text-white">
             WINNER
           </span>
         )}
       </div>
       <BattleVideoPlayer videoId={videoId} title={songTitle} />
       <div>
-        <p className="text-2xl font-semibold text-white sm:text-3xl">{songTitle}</p>
-        <p className="mt-1 text-5xl font-bold tracking-tight text-white sm:text-6xl">
+        <p className="text-2xl font-semibold text-gray-900 sm:text-3xl">{songTitle}</p>
+        <p className="mt-1 text-5xl font-bold tracking-tight text-gray-900 sm:text-6xl">
           {score}
-          <span className="ml-1.5 text-xl font-medium text-white/40">표</span>
+          <span className="ml-1.5 text-xl font-medium text-gray-400">표</span>
         </p>
       </div>
       {onVote && (
@@ -171,24 +171,24 @@ function ChallengerJoinCard({ battleId, onJoined }: { battleId: number; onJoined
   }
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-dashed border-white/20 bg-white/[0.04] p-5 backdrop-blur-xl">
+    <div className="flex flex-col gap-4 rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-5 backdrop-blur-xl">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-semibold uppercase tracking-widest text-white/40">참가자</span>
-        <span className="rounded-full border border-white/10 px-3 py-0.5 text-sm text-white/40">
+        <span className="text-sm font-semibold uppercase tracking-widest text-gray-400">참가자</span>
+        <span className="rounded-full border border-gray-200 px-3 py-0.5 text-sm text-gray-400">
           모집중
         </span>
       </div>
-      <p className="text-base text-white/50">내 곡으로 참가해서 듣기평가를 시작하세요.</p>
+      <p className="text-base text-gray-500">내 곡으로 참가해서 노래대결을 시작하세요.</p>
 
       {isAuthenticated ? (
         <form onSubmit={handleJoin} className="space-y-3">
           {searchEnabled && (
-            <div className="flex gap-0.5 rounded-lg border border-white/10 bg-white/[0.03] p-0.5">
+            <div className="flex gap-0.5 rounded-lg border border-gray-200 bg-gray-50 p-0.5">
               <button
                 type="button"
                 onClick={() => setSource('search')}
                 className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                  source === 'search' ? 'bg-indigo-500 text-white' : 'text-white/60 hover:text-white'
+                  source === 'search' ? 'bg-brand-500 text-gray-900' : 'text-gray-500 hover:text-gray-900'
                 }`}
               >
                 검색
@@ -197,7 +197,7 @@ function ChallengerJoinCard({ battleId, onJoined }: { battleId: number; onJoined
                 type="button"
                 onClick={() => setSource('link')}
                 className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                  source === 'link' ? 'bg-indigo-500 text-white' : 'text-white/60 hover:text-white'
+                  source === 'link' ? 'bg-brand-500 text-gray-900' : 'text-gray-500 hover:text-gray-900'
                 }`}
               >
                 링크
@@ -242,7 +242,7 @@ function ChallengerJoinCard({ battleId, onJoined }: { battleId: number; onJoined
             </div>
           )}
 
-          {error && <p className="text-base text-rose-300">{error}</p>}
+          {error && <p className="text-base text-gray-600">{error}</p>}
 
           <button type="submit" disabled={submitting} className="btn-primary w-full text-lg">
             {submitting ? '참가 중…' : '참가하기'}
@@ -278,7 +278,7 @@ export default function BattleDetailPage() {
 
   const load = useCallback(() => {
     if (!Number.isFinite(id)) {
-      setError('잘못된 듣기평가 주소입니다.')
+      setError('잘못된 노래대결 주소입니다.')
       setLoading(false)
       return
     }
@@ -287,7 +287,7 @@ export default function BattleDetailPage() {
     getBattleDetail(id)
       .then(setData)
       .catch((err: unknown) => {
-        setError(err instanceof ApiError ? err.message : '듣기평가 정보를 불러오지 못했습니다.')
+        setError(err instanceof ApiError ? err.message : '노래대결 정보를 불러오지 못했습니다.')
       })
       .finally(() => setLoading(false))
   }, [id])
@@ -317,11 +317,11 @@ export default function BattleDetailPage() {
     }
   }
 
-  // 듣기평가 삭제: 호스트 본인 + 도전자 없음 + 모집중일 때만 백엔드가 허용한다.
+  // 노래대결 삭제: 호스트 본인 + 도전자 없음 + 모집중일 때만 백엔드가 허용한다.
   // 성공 시 상세 화면이 사라지므로 목록으로 이동한다.
   async function handleDelete() {
     if (!data) return
-    if (!window.confirm('이 듣기평가를 삭제할까요? 되돌릴 수 없습니다.')) return
+    if (!window.confirm('이 노래대결을 삭제할까요? 되돌릴 수 없습니다.')) return
 
     setAction('delete')
     setActionError(null)
@@ -329,7 +329,7 @@ export default function BattleDetailPage() {
       await deleteBattle(id)
       navigate('/')
     } catch (err) {
-      setActionError(err instanceof ApiError ? err.message : '듣기평가 삭제에 실패했습니다.')
+      setActionError(err instanceof ApiError ? err.message : '노래대결 삭제에 실패했습니다.')
       setAction(null)
     }
   }
@@ -364,20 +364,20 @@ export default function BattleDetailPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
-      <Link to="/" className="text-base text-white/40 transition-colors hover:text-white">
+      <Link to="/" className="text-base text-gray-400 transition-colors hover:text-gray-900">
         ← 목록으로
       </Link>
 
       {loading && (
         <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2">
-          <div className="h-96 animate-pulse rounded-2xl border border-white/5 bg-white/[0.03]" />
-          <div className="h-96 animate-pulse rounded-2xl border border-white/5 bg-white/[0.03]" />
+          <div className="h-96 animate-pulse rounded-2xl border border-gray-100 bg-gray-50" />
+          <div className="h-96 animate-pulse rounded-2xl border border-gray-100 bg-gray-50" />
         </div>
       )}
 
       {!loading && error && (
         <div className="glass mt-6 px-6 py-10 text-center">
-          <p className="text-sm text-white/60">{error}</p>
+          <p className="text-sm text-gray-500">{error}</p>
           <button onClick={load} className="btn-ghost mt-4">
             다시 시도
           </button>
@@ -387,19 +387,19 @@ export default function BattleDetailPage() {
       {!loading && !error && data && (
         <>
           <div className="mb-6 mt-4 flex items-start justify-between gap-4">
-            <h1 className="text-2xl font-bold tracking-tight text-white sm:text-4xl">{data.title}</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-4xl">{data.title}</h1>
             <div className="flex shrink-0 flex-col items-end gap-1.5">
               <StatusBadge status={data.matchStatus} />
               <BattleDeadline status={data.matchStatus} voteEndsAt={data.voteEndsAt} />
               {data.createdAt && (
-                <span className="text-xs text-white/35">{formatDateTime(data.createdAt)} 생성</span>
+                <span className="text-xs text-gray-400">{formatDateTime(data.createdAt)} 생성</span>
               )}
             </div>
           </div>
 
           {isSettled && (
-            <div className="mb-6 overflow-hidden rounded-2xl border border-white/10 bg-indigo-500/10 px-6 py-5 text-center backdrop-blur-xl">
-              <p className="text-xl font-semibold text-white sm:text-2xl">
+            <div className="mb-6 overflow-hidden rounded-2xl border border-gray-200 bg-gray-100 px-6 py-5 text-center backdrop-blur-xl">
+              <p className="text-xl font-semibold text-gray-900 sm:text-2xl">
                 {data.matchStatus === 'CALCULATING'
                   ? '집계 중입니다…'
                   : data.winner === 'host'
@@ -414,7 +414,7 @@ export default function BattleDetailPage() {
           )}
 
           {voteError && (
-            <div className="mb-4 rounded-xl border border-rose-400/30 bg-rose-500/10 px-4 py-2.5 text-center text-base text-rose-200">
+            <div className="mb-4 rounded-xl border border-gray-200 bg-gray-100 px-4 py-2.5 text-center text-base text-gray-600">
               {voteError}
             </div>
           )}
@@ -448,20 +448,20 @@ export default function BattleDetailPage() {
                 voting={votingSide === 'challenger'}
               />
             ) : data.matchStatus === 'RECRUITING' ? (
-              // 내 듣기평가에는 참가할 수 없으니, 호스트에게는 폼 대신 대기 안내를 보여준다.
+              // 내 노래대결에는 참가할 수 없으니, 호스트에게는 폼 대신 대기 안내를 보여준다.
               isHost ? (
-                <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-white/20 bg-white/[0.04] p-5 text-center backdrop-blur-xl">
-                  <span className="text-sm font-semibold uppercase tracking-widest text-white/40">
+                <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-5 text-center backdrop-blur-xl">
+                  <span className="text-sm font-semibold uppercase tracking-widest text-gray-400">
                     참가자
                   </span>
-                  <span className="h-2 w-2 animate-pulse rounded-full bg-indigo-300" />
-                  <p className="text-base text-white/40">플레이어를 기다리는 중…</p>
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-gray-400" />
+                  <p className="text-base text-gray-400">플레이어를 기다리는 중…</p>
                 </div>
               ) : (
                 <ChallengerJoinCard battleId={id} onJoined={load} />
               )
             ) : (
-              <div className="flex items-center justify-center rounded-2xl border border-dashed border-white/20 bg-white/[0.04] p-5 text-base text-white/40 backdrop-blur-xl">
+              <div className="flex items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-5 text-base text-gray-400 backdrop-blur-xl">
                 참가자가 없습니다.
               </div>
             )}
@@ -470,7 +470,7 @@ export default function BattleDetailPage() {
           {(canDelete || canSurrender) && (
             <div className="mt-6 flex flex-col items-end gap-2">
               {actionError && (
-                <p className="w-full rounded-xl border border-rose-400/30 bg-rose-500/10 px-4 py-2.5 text-center text-base text-rose-200">
+                <p className="w-full rounded-xl border border-gray-200 bg-gray-100 px-4 py-2.5 text-center text-base text-gray-600">
                   {actionError}
                 </p>
               )}
@@ -478,16 +478,16 @@ export default function BattleDetailPage() {
                 <button
                   onClick={handleDelete}
                   disabled={action !== null}
-                  className="rounded-xl border border-white/20 bg-white/[0.04] px-4 py-2 text-base font-semibold text-white/70 transition-colors hover:border-rose-400/60 hover:text-rose-300 disabled:opacity-40"
+                  className="rounded-xl border border-gray-300 bg-gray-50 px-4 py-2 text-base font-semibold text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-900 disabled:opacity-40"
                 >
-                  {action === 'delete' ? '삭제 중…' : '듣기평가 삭제'}
+                  {action === 'delete' ? '삭제 중…' : '노래대결 삭제'}
                 </button>
               )}
               {canSurrender && (
                 <button
                   onClick={handleSurrender}
                   disabled={action !== null}
-                  className="rounded-xl border border-white/20 bg-white/[0.04] px-4 py-2 text-base font-semibold text-white/70 transition-colors hover:border-rose-400/60 hover:text-rose-300 disabled:opacity-40"
+                  className="rounded-xl border border-gray-300 bg-gray-50 px-4 py-2 text-base font-semibold text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-900 disabled:opacity-40"
                 >
                   {action === 'surrender' ? '항복 처리 중…' : '항복하기'}
                 </button>

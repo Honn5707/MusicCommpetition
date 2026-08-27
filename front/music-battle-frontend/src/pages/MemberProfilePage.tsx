@@ -1,87 +1,130 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
-import { getFollowing } from '../api/follows.ts'
+import { getMemberProfile } from '../api/members.ts'
+import { ApiError } from '../api/client.ts'
 import { useAuth } from '../auth/AuthContext.tsx'
 import FollowButton from '../components/FollowButton.tsx'
+import { BattleCard } from '../components/BattleCard.tsx'
+import type { MemberProfileResponse } from '../types/api.ts'
 
 interface LocationState {
   nickname?: string
 }
 
-// 회원 프로필 + 팔로우 버튼. (라우트: /members/:memberId)
-// ※ 백엔드에 "회원 조회" 공개 API가 없어, 닉네임은 목록에서 넘어올 때 state로 받고
-//   없으면 "회원 #id"로 대체한다.
+// 회원 프로필. (라우트: /members/:memberId)
+// GET /api/members/{id}/profile 로 닉네임·팔로워/팔로잉 수·isFollowing·진행 중 대결을 받아온다.
 export default function MemberProfilePage() {
   const { memberId } = useParams()
   const location = useLocation()
   const { memberId: myId, isAuthenticated } = useAuth()
 
   const targetId = Number(memberId)
-  const nickname = (location.state as LocationState | null)?.nickname
   const isSelf = myId != null && myId === targetId
+  const fallbackNickname = (location.state as LocationState | null)?.nickname
 
-  // 'loading' | true | false — 초기 팔로우 상태.
-  const [followState, setFollowState] = useState<'loading' | boolean>('loading')
+  const [data, setData] = useState<MemberProfileResponse | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  // 팔로우 토글 시 즉시 반영하기 위한 로컬 카운트.
+  const [followerCount, setFollowerCount] = useState(0)
 
-  useEffect(() => {
-    if (!isAuthenticated || isSelf || !Number.isFinite(targetId) || myId == null) {
-      setFollowState(false)
+  const load = useCallback(() => {
+    if (!Number.isFinite(targetId)) {
+      setError('잘못된 프로필 주소입니다.')
+      setLoading(false)
       return
     }
-    let cancelled = false
-    // isFollowing 전용 API가 없어, 내 팔로잉 목록을 넉넉히 받아 포함 여부로 판단한다.
-    getFollowing(myId, 0, 1000)
-      .then((page) => {
-        if (!cancelled) setFollowState(page.content.some((u) => u.memberId === targetId))
+    setLoading(true)
+    setError(null)
+    getMemberProfile(targetId)
+      .then((res) => {
+        setData(res)
+        setFollowerCount(res.followerCount)
       })
-      .catch(() => {
-        if (!cancelled) setFollowState(false)
+      .catch((err: unknown) => {
+        setError(err instanceof ApiError ? err.message : '프로필을 불러오지 못했습니다.')
       })
-    return () => {
-      cancelled = true
-    }
-  }, [isAuthenticated, isSelf, targetId, myId])
+      .finally(() => setLoading(false))
+  }, [targetId])
 
-  if (!Number.isFinite(targetId)) {
-    return (
-      <div className="mx-auto max-w-md px-6 py-16 text-center text-white/60">
-        잘못된 프로필 주소입니다.
-      </div>
-    )
-  }
+  useEffect(() => {
+    load()
+  }, [load])
+
+  const nickname = data?.nickname ?? fallbackNickname ?? `회원 #${targetId}`
 
   return (
-    <div className="mx-auto max-w-md px-6 py-12">
-      <Link to="/" className="text-sm text-white/40 transition-colors hover:text-white">
+    <div className="mx-auto max-w-2xl px-6 py-10">
+      <Link to="/" className="text-sm text-gray-400 transition-colors hover:text-gray-900">
         ← 목록으로
       </Link>
 
-      <div className="glass mt-6 flex flex-col items-center gap-4 p-8 text-center">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-indigo-500/20 text-3xl font-bold text-indigo-200">
-          {(nickname ?? '?').slice(0, 1)}
-        </div>
-        <h1 className="text-2xl font-bold text-white">{nickname ?? `회원 #${targetId}`}</h1>
+      {loading && <div className="glass mt-6 h-44 animate-pulse" />}
 
-        {isSelf ? (
-          <Link to="/follows" className="btn-ghost text-sm">
-            내 팔로워 · 팔로잉 보기
-          </Link>
-        ) : isAuthenticated ? (
-          followState === 'loading' ? (
-            <div className="h-9 w-24 animate-pulse rounded-lg bg-white/10" />
-          ) : (
-            <FollowButton targetId={targetId} initialFollowing={followState} />
-          )
-        ) : (
-          <Link
-            to="/login"
-            state={{ from: location.pathname }}
-            className="btn-primary px-4 py-1.5 text-sm"
-          >
-            로그인하고 팔로우
-          </Link>
-        )}
-      </div>
+      {!loading && error && (
+        <div className="glass mt-6 px-6 py-10 text-center text-sm text-gray-500">{error}</div>
+      )}
+
+      {!loading && !error && data && (
+        <>
+          <div className="glass mt-6 flex flex-col items-center gap-4 p-8 text-center">
+            {/* 프로필 이미지 자리 — 아직 백엔드 이미지 필드 없어 이니셜로 대체 */}
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-brand-500/15 text-3xl font-bold text-brand-700">
+              {nickname.slice(0, 1)}
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900">{nickname}</h1>
+
+            <div className="flex gap-6 text-sm">
+              <span>
+                <b className="font-bold text-gray-900">{followerCount}</b>{' '}
+                <span className="text-gray-500">팔로워</span>
+              </span>
+              <span>
+                <b className="font-bold text-gray-900">{data.followingCount}</b>{' '}
+                <span className="text-gray-500">팔로잉</span>
+              </span>
+            </div>
+
+            {isSelf ? (
+              <span className="text-xs text-gray-400">내 프로필</span>
+            ) : isAuthenticated ? (
+              <FollowButton
+                targetId={targetId}
+                initialFollowing={data.isFollowing}
+                onChange={(f) => setFollowerCount((c) => Math.max(0, c + (f ? 1 : -1)))}
+              />
+            ) : (
+              <Link
+                to="/login"
+                state={{ from: location.pathname }}
+                className="btn-primary px-4 py-1.5 text-sm"
+              >
+                로그인하고 팔로우
+              </Link>
+            )}
+          </div>
+
+          <section className="mt-8">
+            <h2 className="mb-4 text-lg font-bold text-gray-900">
+              진행 중인 노래대결
+              <span className="ml-2 text-sm font-semibold text-gray-400">
+                {(data.currentBattleSummaryResponse ?? []).length}
+              </span>
+            </h2>
+            {(data.currentBattleSummaryResponse ?? []).length > 0 ? (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {data.currentBattleSummaryResponse.map((b) => (
+                  <BattleCard key={b.battleId} battle={b} />
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-6 py-12 text-center">
+                <p className="text-sm text-gray-400">진행 중인 노래대결이 없어요.</p>
+              </div>
+            )}
+          </section>
+        </>
+      )}
     </div>
   )
 }

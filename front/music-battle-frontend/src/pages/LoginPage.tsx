@@ -169,25 +169,25 @@ export default function LoginPage() {
 
   return (
     <div className="mx-auto max-w-md px-6 py-16">
-      <Link to="/" className="text-sm text-white/40 transition-colors hover:text-white">
+      <Link to="/" className="text-sm text-gray-400 transition-colors hover:text-gray-900">
         ← 목록으로
       </Link>
 
       <div className="glass mt-6 p-7 sm:p-8">
-        <h1 className="text-2xl font-bold tracking-tight text-white">
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900">
           {mode === 'login' ? '로그인' : '회원가입'}
         </h1>
-        <p className="mt-1.5 text-sm text-white/50">
+        <p className="mt-1.5 text-sm text-gray-500">
           {mode === 'login'
-            ? '듣기평가를 만들거나 도전하려면 로그인하세요.'
+            ? '노래대결을 만들거나 도전하려면 로그인하세요.'
             : '이메일 인증 후 계정을 만드세요.'}
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           {/* 회원가입: 이메일 인증 블록 */}
           {mode === 'register' && (
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-              <label className="mb-1.5 block text-sm font-medium text-white/80">이메일</label>
+            <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <label className="mb-1.5 block text-sm font-medium text-gray-700">이메일</label>
               <div className="flex gap-2">
                 <input
                   type="email"
@@ -231,16 +231,16 @@ export default function LoginPage() {
               )}
 
               {emailVerified && (
-                <p className="mt-2 text-sm font-medium text-emerald-300">✓ 이메일 인증 완료</p>
+                <p className="mt-2 text-sm font-medium text-brand-600">✓ 이메일 인증 완료</p>
               )}
               {!emailVerified && emailNotice && (
-                <p className="mt-2 text-sm text-indigo-200">{emailNotice}</p>
+                <p className="mt-2 text-sm text-gray-700">{emailNotice}</p>
               )}
             </div>
           )}
 
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-white/80">아이디</label>
+            <label className="mb-1.5 block text-sm font-medium text-gray-700">아이디</label>
             <input
               value={providerId}
               onChange={(e) => setProviderId(e.target.value)}
@@ -253,7 +253,7 @@ export default function LoginPage() {
 
           {mode === 'register' && (
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-white/80">닉네임</label>
+              <label className="mb-1.5 block text-sm font-medium text-gray-700">닉네임</label>
               <input
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
@@ -265,7 +265,7 @@ export default function LoginPage() {
           )}
 
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-white/80">비밀번호</label>
+            <label className="mb-1.5 block text-sm font-medium text-gray-700">비밀번호</label>
             <input
               type="password"
               value={password}
@@ -276,7 +276,7 @@ export default function LoginPage() {
             />
           </div>
 
-          {error && <p className="text-sm text-rose-300">{error}</p>}
+          {error && <p className="text-sm text-gray-600">{error}</p>}
 
           <button
             type="submit"
@@ -289,10 +289,10 @@ export default function LoginPage() {
 
         {/* 소셜 로그인 */}
         <div className="mt-6">
-          <div className="flex items-center gap-3 text-xs text-white/40">
-            <span className="h-px flex-1 bg-white/15" />
+          <div className="flex items-center gap-3 text-xs text-gray-400">
+            <span className="h-px flex-1 bg-gray-200" />
             또는 소셜 계정으로
-            <span className="h-px flex-1 bg-white/15" />
+            <span className="h-px flex-1 bg-gray-200" />
           </div>
 
           <div className="mt-4 space-y-2.5">
@@ -300,7 +300,7 @@ export default function LoginPage() {
               type="button"
               onClick={handleGoogleLogin}
               style={{ textShadow: 'none' }}
-              className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-white/25 bg-white/95 px-4 py-2.5 font-semibold text-gray-800 transition-colors hover:bg-white"
+              className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-gray-300 bg-white/95 px-4 py-2.5 font-semibold text-gray-800 transition-colors hover:bg-white"
             >
               <GoogleIcon />
               Google로 로그인
@@ -318,23 +318,23 @@ export default function LoginPage() {
               type="button"
               onClick={() => handleComingSoon('네이버')}
               style={{ textShadow: 'none' }}
-              className="flex w-full items-center justify-center gap-2.5 rounded-lg bg-[#03C75A] px-4 py-2.5 font-semibold text-white transition-opacity hover:opacity-90"
+              className="flex w-full items-center justify-center gap-2.5 rounded-lg bg-[#03C75A] px-4 py-2.5 font-semibold text-gray-900 transition-opacity hover:opacity-90"
             >
               <span className="font-black">N</span>
               네이버로 로그인
             </button>
           </div>
 
-          {socialNote && <p className="mt-3 text-center text-sm text-amber-200">{socialNote}</p>}
+          {socialNote && <p className="mt-3 text-center text-sm text-amber-600">{socialNote}</p>}
         </div>
 
-        <div className="mt-6 text-center text-sm text-white/50">
+        <div className="mt-6 text-center text-sm text-gray-500">
           {mode === 'login' ? (
             <>
               아직 계정이 없나요?{' '}
               <button
                 onClick={() => switchMode('register')}
-                className="font-medium text-fuchsia-300 underline-offset-2 hover:underline"
+                className="font-medium text-gray-600 underline-offset-2 hover:underline"
               >
                 회원가입
               </button>
@@ -344,7 +344,7 @@ export default function LoginPage() {
               이미 계정이 있나요?{' '}
               <button
                 onClick={() => switchMode('login')}
-                className="font-medium text-fuchsia-300 underline-offset-2 hover:underline"
+                className="font-medium text-gray-600 underline-offset-2 hover:underline"
               >
                 로그인
               </button>

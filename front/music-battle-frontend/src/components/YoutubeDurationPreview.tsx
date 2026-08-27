@@ -62,12 +62,12 @@ export default function YoutubeDurationPreview({ videoId, onDuration, onMeta }: 
   }, [videoId])
 
   return (
-    <div className="overflow-hidden rounded-xl border border-white/10 bg-white/[0.04]">
+    <div className="overflow-hidden rounded-xl border border-gray-200 bg-gray-50">
       <div className="aspect-video w-full bg-black/40" ref={containerRef} />
-      <div className="px-3 py-2 text-xs text-white/50">
+      <div className="px-3 py-2 text-xs text-gray-500">
         {status === 'loading' && '재생 시간 확인 중…'}
         {status === 'error' && (
-          <span className="text-rose-300">영상 재생 시간을 가져오지 못했습니다. 링크를 확인해주세요.</span>
+          <span className="text-gray-600">영상 재생 시간을 가져오지 못했습니다. 링크를 확인해주세요.</span>
         )}
         {status === 'ready' && '재생 시간을 자동으로 반영했습니다.'}
       </div>

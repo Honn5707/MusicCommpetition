@@ -59,7 +59,7 @@ export default function CreateBattlePage() {
     e.preventDefault()
 
     if (!title.trim()) {
-      setError('듣기평가 제목을 입력해주세요.')
+      setError('노래대결 제목을 입력해주세요.')
       return
     }
     if (!videoId) {
@@ -91,17 +91,17 @@ export default function CreateBattlePage() {
       })
       navigate(`/battles/${result.battleId}`)
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : '듣기평가 생성에 실패했습니다.')
+      setError(err instanceof ApiError ? err.message : '노래대결 생성에 실패했습니다.')
       setSubmitting(false)
     }
   }
 
-  // 로그인하지 않았으면 로그인 페이지로 안내한다 (듣기평가 생성은 JWT 필요).
+  // 로그인하지 않았으면 로그인 페이지로 안내한다 (노래대결 생성은 JWT 필요).
   if (!isAuthenticated) {
     return (
       <div className="mx-auto max-w-md px-6 py-16 text-center">
-        <h1 className="text-2xl font-bold tracking-tight text-white">로그인이 필요합니다</h1>
-        <p className="mt-2 text-sm text-white/50">듣기평가를 만들려면 먼저 로그인해주세요.</p>
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900">로그인이 필요합니다</h1>
+        <p className="mt-2 text-sm text-gray-500">노래대결을 만들려면 먼저 로그인해주세요.</p>
         <Link to="/login" state={{ from: '/battles/new' }} className="btn-primary mt-8 inline-block">
           로그인하러 가기
         </Link>
@@ -112,13 +112,13 @@ export default function CreateBattlePage() {
   return (
     <div className="mx-auto max-w-2xl px-6 py-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-white">듣기평가 만들기</h1>
-        <p className="mt-1.5 text-sm text-white/50">대표곡을 등록하면 듣기평가가 시작됩니다.</p>
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900">노래대결 만들기</h1>
+        <p className="mt-1.5 text-sm text-gray-500">대표곡을 등록하면 노래대결이 시작됩니다.</p>
       </div>
 
       <form onSubmit={handleCreate} className="glass space-y-6 p-6 sm:p-8">
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-white/80">듣기평가 제목</label>
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">노래대결 제목</label>
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -128,7 +128,7 @@ export default function CreateBattlePage() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-white/80">투표 시간</label>
+          <label className="mb-1.5 block text-sm font-medium text-gray-700">투표 시간</label>
           <div className="flex flex-wrap gap-2">
             {VOTE_DURATION_OPTIONS.map((o) => (
               <button
@@ -137,27 +137,27 @@ export default function CreateBattlePage() {
                 onClick={() => setVoteDurationSec(o.sec)}
                 className={`rounded-lg border px-3.5 py-1.5 text-sm font-medium transition-colors ${
                   voteDurationSec === o.sec
-                    ? 'border-indigo-400/70 bg-indigo-500/20 text-white'
-                    : 'border-white/20 text-white/60 hover:border-white/40 hover:text-white'
+                    ? 'border-gray-400 bg-gray-100 text-gray-900'
+                    : 'border-gray-300 text-gray-500 hover:border-gray-400 hover:text-gray-900'
                 }`}
               >
                 {o.label}
               </button>
             ))}
           </div>
-          <p className="mt-1.5 text-xs text-white/40">도전자가 참가하면 이 시간 동안 투표가 진행됩니다.</p>
+          <p className="mt-1.5 text-xs text-gray-400">도전자가 참가하면 이 시간 동안 투표가 진행됩니다.</p>
         </div>
 
         <div>
           <div className="mb-1.5 flex items-center justify-between">
-            <label className="block text-sm font-medium text-white/80">곡 (YouTube)</label>
+            <label className="block text-sm font-medium text-gray-700">곡 (YouTube)</label>
             {searchEnabled && (
-              <div className="flex gap-0.5 rounded-lg border border-white/10 bg-white/[0.03] p-0.5">
+              <div className="flex gap-0.5 rounded-lg border border-gray-200 bg-gray-50 p-0.5">
                 <button
                   type="button"
                   onClick={() => setSource('search')}
                   className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
-                    source === 'search' ? 'bg-indigo-500 text-white' : 'text-white/60 hover:text-white'
+                    source === 'search' ? 'bg-brand-500 text-gray-900' : 'text-gray-500 hover:text-gray-900'
                   }`}
                 >
                   검색
@@ -166,7 +166,7 @@ export default function CreateBattlePage() {
                   type="button"
                   onClick={() => setSource('link')}
                   className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
-                    source === 'link' ? 'bg-indigo-500 text-white' : 'text-white/60 hover:text-white'
+                    source === 'link' ? 'bg-brand-500 text-gray-900' : 'text-gray-500 hover:text-gray-900'
                   }`}
                 >
                   링크
@@ -186,7 +186,7 @@ export default function CreateBattlePage() {
             />
           )}
           {videoUrl && !videoId && source === 'link' && (
-            <p className="mt-1.5 text-xs text-rose-300">링크에서 영상 ID를 찾지 못했습니다.</p>
+            <p className="mt-1.5 text-xs text-gray-600">링크에서 영상 ID를 찾지 못했습니다.</p>
           )}
           {videoId && (
             <div className="mt-3">
@@ -206,7 +206,7 @@ export default function CreateBattlePage() {
         {(songTitle || videoId) && (
           <div className="space-y-3">
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-white/80">곡 제목</label>
+              <label className="mb-1.5 block text-sm font-medium text-gray-700">곡 제목</label>
               <input
                 value={songTitle}
                 onChange={(e) => setSongTitle(e.target.value)}
@@ -215,7 +215,7 @@ export default function CreateBattlePage() {
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-white/80">아티스트</label>
+              <label className="mb-1.5 block text-sm font-medium text-gray-700">아티스트</label>
               <input
                 value={channelTitle}
                 onChange={(e) => setChannelTitle(e.target.value)}
@@ -223,20 +223,20 @@ export default function CreateBattlePage() {
                 className="glass-input"
               />
             </div>
-            <p className="text-xs text-white/40">
+            <p className="text-xs text-gray-400">
               곡을 선택하면 아티스트가 안내(placeholder)로 채워져요. 비워두면 그대로 사용되고, 직접 입력하면 그 값이 쓰여요.
             </p>
           </div>
         )}
 
-        {error && <p className="text-sm text-rose-300">{error}</p>}
+        {error && <p className="text-sm text-gray-600">{error}</p>}
 
         <div className="flex gap-3 pt-2">
           <button type="button" onClick={() => navigate('/')} className="btn-ghost">
             취소
           </button>
           <button type="submit" disabled={submitting} className="btn-primary flex-1">
-            {submitting ? '만드는 중…' : '듣기평가 만들기'}
+            {submitting ? '만드는 중…' : '노래대결 만들기'}
           </button>
         </div>
       </form>

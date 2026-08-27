@@ -61,12 +61,12 @@ export default function OauthCallbackPage() {
     <div className="mx-auto max-w-md px-6 py-20 text-center">
       {!error ? (
         <>
-          <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-white/20 border-t-white/70" />
-          <p className="mt-6 text-lg text-white/70">로그인 처리 중…</p>
+          <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-gray-200 border-t-gray-900" />
+          <p className="mt-6 text-lg text-gray-600">로그인 처리 중…</p>
         </>
       ) : (
         <div className="glass px-6 py-10">
-          <p className="text-lg text-rose-300">{error}</p>
+          <p className="text-lg text-gray-600">{error}</p>
           <Link to="/login" className="btn-primary mt-6 inline-block">
             로그인으로 돌아가기
           </Link>

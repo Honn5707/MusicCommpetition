@@ -28,7 +28,7 @@ export default function FollowsPage() {
     setLoading(true)
     setError(null)
     const fetcher = tab === 'followers' ? getFollowers : getFollowing
-    fetcher(memberId, page, SIZE)
+    fetcher(page, SIZE)
       .then((res) => {
         if (!cancelled) setData(res)
       })
@@ -46,7 +46,7 @@ export default function FollowsPage() {
   if (!isAuthenticated) {
     return (
       <div className="mx-auto max-w-md px-6 py-16 text-center">
-        <p className="text-sm text-white/60">팔로우 목록은 로그인 후 볼 수 있어요.</p>
+        <p className="text-sm text-gray-500">팔로우 목록은 로그인 후 볼 수 있어요.</p>
         <Link to="/login" state={{ from: '/follows' }} className="btn-primary mt-6 inline-block">
           로그인하러 가기
         </Link>
@@ -56,16 +56,16 @@ export default function FollowsPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-8">
-      <h1 className="mb-5 text-2xl font-bold tracking-tight text-white">팔로우</h1>
+      <h1 className="mb-5 text-2xl font-bold tracking-tight text-gray-900">팔로우</h1>
 
-      <div className="mb-5 flex gap-1 rounded-xl border border-white/15 bg-white/[0.03] p-1">
+      <div className="mb-5 flex gap-1 rounded-xl border border-gray-200 bg-gray-50 p-1">
         {(['followers', 'following'] as const).map((t) => (
           <button
             key={t}
             type="button"
             onClick={() => setTab(t)}
             className={`flex-1 rounded-lg px-3 py-2 text-center text-sm font-semibold transition-colors ${
-              tab === t ? 'bg-indigo-500 text-white' : 'text-white/60 hover:text-white'
+              tab === t ? 'bg-brand-500 text-gray-900' : 'text-gray-500 hover:text-gray-900'
             }`}
           >
             {t === 'followers' ? '팔로워' : '팔로잉'}
@@ -76,20 +76,20 @@ export default function FollowsPage() {
       {loading && (
         <div className="space-y-2">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-14 animate-pulse rounded-xl border border-white/5 bg-white/[0.03]" />
+            <div key={i} className="h-14 animate-pulse rounded-xl border border-gray-100 bg-gray-50" />
           ))}
         </div>
       )}
 
       {!loading && error && (
         <div className="glass px-6 py-10 text-center">
-          <p className="text-sm text-white/60">{error}</p>
+          <p className="text-sm text-gray-500">{error}</p>
         </div>
       )}
 
       {!loading && !error && data && data.content.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-white/20 bg-white/[0.03] px-6 py-16 text-center">
-          <p className="text-sm text-white/40">
+        <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-6 py-16 text-center">
+          <p className="text-sm text-gray-400">
             {tab === 'followers' ? '아직 팔로워가 없어요.' : '아직 팔로우한 사람이 없어요.'}
           </p>
         </div>
@@ -103,12 +103,12 @@ export default function FollowsPage() {
                 <Link
                   to={`/members/${u.memberId}`}
                   state={{ nickname: u.nickname }}
-                  className="glass flex items-center gap-3 p-3.5 transition-colors hover:border-white/25 hover:bg-white/[0.05]"
+                  className="glass flex items-center gap-3 p-3.5 transition-colors hover:border-gray-300 hover:bg-gray-100"
                 >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-500/20 font-bold text-indigo-200">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-500/15 font-bold text-brand-700">
                     {u.nickname.slice(0, 1)}
                   </span>
-                  <span className="truncate font-semibold text-white">{u.nickname}</span>
+                  <span className="truncate font-semibold text-gray-900">{u.nickname}</span>
                 </Link>
               </li>
             ))}
@@ -123,8 +123,8 @@ export default function FollowsPage() {
               >
                 이전
               </button>
-              <span className="text-sm text-white/50">
-                <span className="font-semibold text-white">{data.page + 1}</span> /{' '}
+              <span className="text-sm text-gray-500">
+                <span className="font-semibold text-gray-900">{data.page + 1}</span> /{' '}
                 {Math.max(data.totalPages, 1)}
               </span>
               <button

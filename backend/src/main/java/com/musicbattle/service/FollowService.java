@@ -4,9 +4,7 @@ import com.musicbattle.domain.Follow;
 import com.musicbattle.domain.Member;
 import com.musicbattle.repository.FollowRepository;
 import com.musicbattle.repository.MemberRepository;
-import com.musicbattle.web.dto.FollowerListResponse;
-import com.musicbattle.web.dto.FollowingListResponse;
-import com.musicbattle.web.dto.PageResponse;
+import com.musicbattle.web.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -61,6 +59,18 @@ public class FollowService {
         return new PageResponse<>(responses, followPage.getNumber(), followPage.getSize(),
                 followPage.getTotalElements(), followPage.getTotalPages(), followPage.hasNext());
     }
+
+    public boolean isFollowing(Long memberId, Long targetId){
+        return followRepository.existsByFollowerIdAndFollowingId(memberId, targetId);
+    }
+    public Long followerCount(Long targetId){
+        return followRepository.countByFollowingId(targetId);
+    }
+    public Long followingCount(Long targetId){
+        return followRepository.countByFollowerId(targetId);
+    }
+
+
 }
 
 

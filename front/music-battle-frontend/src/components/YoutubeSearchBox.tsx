@@ -77,16 +77,16 @@ export default function YoutubeSearchBox({
           className="glass-input py-2.5 pr-16"
         />
         {loading && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/40">
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
             검색 중…
           </span>
         )}
       </div>
 
-      {error && <p className="text-sm text-rose-300">{error}</p>}
+      {error && <p className="text-sm text-gray-600">{error}</p>}
 
       {searched && !loading && !error && results.length === 0 && (
-        <p className="text-sm text-white/40">검색 결과가 없습니다. 다른 키워드로 시도해보세요.</p>
+        <p className="text-sm text-gray-400">검색 결과가 없습니다. 다른 키워드로 시도해보세요.</p>
       )}
 
       {results.length > 0 && (
@@ -96,7 +96,7 @@ export default function YoutubeSearchBox({
               <button
                 type="button"
                 onClick={() => handlePick(r)}
-                className="flex w-full items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-2 text-left transition-colors hover:border-indigo-400/50 hover:bg-white/[0.06]"
+                className="flex w-full items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-2 text-left transition-colors hover:border-gray-400 hover:bg-gray-100"
               >
                 <img
                   src={r.thumbnailUrl}
@@ -105,8 +105,8 @@ export default function YoutubeSearchBox({
                   loading="lazy"
                 />
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-white">{r.title}</p>
-                  <p className="truncate text-xs text-white/45">{r.channelTitle}</p>
+                  <p className="truncate text-sm font-medium text-gray-900">{r.title}</p>
+                  <p className="truncate text-xs text-gray-400">{r.channelTitle}</p>
                 </div>
               </button>
             </li>

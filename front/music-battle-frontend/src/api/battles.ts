@@ -32,7 +32,7 @@ export function getBattleDetail(battleId: number) {
   return apiRequest<BattleDetailResponse>(`/api/battles/${battleId}`)
 }
 
-// 듣기평가 삭제: 호스트 본인 + 도전자 없음 + 모집중(RECRUITING) 상태에서만 백엔드가 허용한다.
+// 노래대결 삭제: 호스트 본인 + 도전자 없음 + 모집중(RECRUITING) 상태에서만 백엔드가 허용한다.
 // 그 외 조건은 백엔드가 예외(ApiError)로 막으므로 프론트는 결과만 처리한다.
 export function deleteBattle(battleId: number) {
   return apiRequest<void>(`/api/battles/${battleId}`, {

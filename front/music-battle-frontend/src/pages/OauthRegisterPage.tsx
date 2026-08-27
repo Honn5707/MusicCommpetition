@@ -28,7 +28,7 @@ export default function OauthRegisterPage() {
     return (
       <div className="mx-auto max-w-md px-6 py-20 text-center">
         <div className="glass px-6 py-10">
-          <p className="text-lg text-white/70">인증 정보가 없습니다. 로그인을 다시 시작해주세요.</p>
+          <p className="text-lg text-gray-600">인증 정보가 없습니다. 로그인을 다시 시작해주세요.</p>
           <Link to="/login" className="btn-primary mt-6 inline-block">
             로그인으로 돌아가기
           </Link>
@@ -61,12 +61,12 @@ export default function OauthRegisterPage() {
   return (
     <div className="mx-auto max-w-md px-6 py-16">
       <div className="glass p-7 sm:p-8">
-        <h1 className="text-2xl font-bold tracking-tight text-white">닉네임을 정해주세요</h1>
-        <p className="mt-1.5 text-sm text-white/50">듣기평가에서 사용할 이름이에요.</p>
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900">닉네임을 정해주세요</h1>
+        <p className="mt-1.5 text-sm text-gray-500">노래대결에서 사용할 이름이에요.</p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-white/80">닉네임</label>
+            <label className="mb-1.5 block text-sm font-medium text-gray-700">닉네임</label>
             <input
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
@@ -77,7 +77,7 @@ export default function OauthRegisterPage() {
             />
           </div>
 
-          {error && <p className="text-sm text-rose-300">{error}</p>}
+          {error && <p className="text-sm text-gray-600">{error}</p>}
 
           <button type="submit" disabled={submitting} className="btn-primary w-full disabled:opacity-40">
             {submitting ? '처리 중…' : '시작하기'}

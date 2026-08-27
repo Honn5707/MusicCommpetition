@@ -36,6 +36,7 @@ public class MemberService {
     private final RecaptchaUtilities recaptchaUtilities;
     private final StringRedisTemplate redisTemplate;
     private final EmailService emailService;
+    private final FollowService followService;
 
     @Transactional
     public MemberRegisterResult register(MemberRegisterRequest request){
@@ -77,7 +78,6 @@ public class MemberService {
     }
 
 
-    @Transactional
     public MemberPageResponse memberPage(Long memberId, Pageable pageable){
         //memberId 조회를 통해 배틀에 속한 list를 DTO로 리턴
         Member member = memberRepository.findById(memberId).orElseThrow(()->new IllegalStateException("조회가 불가능한 회원"));
@@ -100,8 +100,22 @@ public class MemberService {
         );
 
         return new MemberPageResponse(currentBattleSummaryResponse, finishedBattleSummaryResponse, nickname, pointBalance);
+    }
+
+    //profile->>타인의 멤버페이지조회
+    public MemberProfileResponse memberProfile(Long memberId, Long targetId){
+        Member member = memberRepository.findById(targetId).orElseThrow(()->new IllegalStateException("조회가 불가능한 회원"));
+        String nickname = member.getNickname();
+
+        List<BattleSummaryResponse> currentBattleSummaryResponse = matchEntryRepository.listOfCurrentMatches(targetId, MatchStatus.FINISHED).stream().map(
+                battleSummaryAssembler::battleSummary).toList();
+
+        if(memberId ==null) return new MemberProfileResponse(currentBattleSummaryResponse, nickname, followService.followerCount(targetId), followService.followingCount(targetId),false);
+
+        return new MemberProfileResponse(currentBattleSummaryResponse, nickname, followService.followerCount(targetId), followService.followingCount(targetId), followService.isFollowing(memberId, targetId));
 
     }
+
 
     //회원탈퇴
     @Transactional

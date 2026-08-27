@@ -37,10 +37,19 @@ public class MemberController {
     public ResponseEntity<MemberPageResponse> myPage(
             @AuthenticationPrincipal Long memberId,
             @PageableDefault(size = 5) Pageable pageable){
-        MemberPageResponse result = memberService.memberPage(memberId, pageable);
+        MemberPageResponse response = memberService.memberPage(memberId, pageable);
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(response);
 
+    }
+
+    @GetMapping("/{targetId}/profile")
+    public ResponseEntity<MemberProfileResponse> profile(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long targetId
+    ){
+        MemberProfileResponse response = memberService.memberProfile(memberId,targetId);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/delete-account")
@@ -69,7 +78,7 @@ public class MemberController {
         return  ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{targetId}/followerList")
+    @GetMapping("/followerList")
     public ResponseEntity<PageResponse<FollowerListResponse>>followerList(
             @AuthenticationPrincipal Long memberId,
             Pageable pageable)
@@ -77,7 +86,7 @@ public class MemberController {
              return ResponseEntity.ok(followService.getFollowerList(memberId,pageable));
     }
 
-    @GetMapping("/{targetId}/followingList")
+    @GetMapping("/followingList")
     public ResponseEntity<PageResponse<FollowingListResponse>> followingList(
             @AuthenticationPrincipal Long memberId,
             Pageable pageable)
@@ -85,6 +94,8 @@ public class MemberController {
         return ResponseEntity.ok(followService.getFollowingList(memberId,pageable));
 
     }
+
+
 
 
 

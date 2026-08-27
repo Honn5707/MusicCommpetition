@@ -3,187 +3,98 @@
 @tailwind utilities;
 
 /* ─────────────────────────────────────────────────────────────
-   디자인 시스템 — 초록 칠판 + 분필
-   - 배경: 딥 그린 칠판에 분필 가루(노이즈) 질감 + 은은한 비네트
-   - 카드/인풋: 분필로 그린 듯한 흰 테두리와 아주 옅은 표면
-   - 색: 파란 분필(호스트) · 분홍 분필(도전자) 두 축 (팔레트는 tailwind.config)
-   - 글꼴: Gaegu 손글씨체로 칠판에 쓴 느낌
-   페이지들은 아래 컴포넌트 클래스를 재사용해 하나의 시스템으로 보이게 한다.
+   디자인 시스템 — 라이트 + 생동감 (Spotify 감성)
+   - 배경: 살짝 톤 다운된 오프화이트(카드가 떠 보이게)
+   - 카드: 화이트 + 큰 라운드 + 부드러운 그림자, hover 시 살짝 떠오름
+   - 포인트: 스포티파이 그린(brand) · 분홍은 팔로우 하트 전용
+   - 글꼴: Pretendard
    ───────────────────────────────────────────────────────────── */
 
 @layer base {
   html {
-    color-scheme: dark;
-    /* 루트 크기로 rem 기반 Tailwind 글자·간격을 전반적으로 조절.
-       화면 폭에 따라 반응형: 모바일은 작게, 큰 화면일수록 크게(원하는 크기로 숫자만 바꾸면 됨). */
-    font-size: 120%; /* 모바일 기본 */
+    color-scheme: light;
+    font-size: 100%;
   }
   @media (min-width: 640px) {
-    html {
-      font-size: 137.5%; /* 태블릿~ */
-    }
+    html { font-size: 106.25%; }
   }
   @media (min-width: 1024px) {
-    html {
-      font-size: 156.25%; /* 데스크톱(직접 설정하신 큰 크기 유지) */
-    }
+    html { font-size: 112.5%; }
   }
+
   body {
     min-height: 100vh;
     margin: 0;
-    color: #f8f7f0; /* 밝은 분필 흰색 */
-    /* 가독성 우선: 정갈한 분필 손글씨체 Gaegu를 본문 기본으로 사용
-       (기존 Nanum Pen Script는 획이 얇고 흘림이 심해 가독성이 낮았다). */
-    font-family: 'Gaegu', 'Apple SD Gothic Neo', -apple-system,
-      BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    /* Gaegu 700은 획이 또렷하고 둥글어 칠판에서도 잘 읽힌다 */
-    font-weight: 700;
-    font-size: 1.1rem;
-    line-height: 1.6;
-    letter-spacing: 0.005em;
-    /* 스트로크는 글자를 번지게 해 가독성을 떨어뜨리므로 사용하지 않는다(Gaegu는 이미 충분히 두껍다) */
-    -webkit-text-stroke: 0;
+    color: #0d0d0f;
+    font-family: 'Pretendard', 'Pretendard Variable', system-ui, -apple-system,
+      'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif;
+    font-weight: 400;
+    letter-spacing: -0.015em;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    /* 초록 칠판 위에서 또렷하게 보이도록 옅은 그림자로 대비만 준다(과한 블러는 지양) */
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
-    /* 위→아래: 분필가루 노이즈 · 상단 칠판빛 · 좌우 분필 얼룩 · 초록 칠판 바탕 */
-    background-color: #33453b;
+    /* 오프화이트 위에 아주 옅은 그린 글로우로 밋밋함 제거 */
+    background-color: #f5f6f4;
     background-image:
-      url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='120'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.85'%20numOctaves='2'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20type='saturate'%20values='0'/%3E%3C/filter%3E%3Crect%20width='100%25'%20height='100%25'%20filter='url(%23n)'%20opacity='0.06'/%3E%3C/svg%3E"),
-      radial-gradient(1100px 700px at 50% -8%, rgba(255, 255, 255, 0.06), transparent 60%),
-      radial-gradient(600px 400px at 12% 20%, rgba(255, 255, 255, 0.035), transparent 70%),
-      radial-gradient(700px 500px at 88% 80%, rgba(255, 255, 255, 0.03), transparent 70%),
-      linear-gradient(180deg, #37493e 0%, #2e3d34 100%);
+      radial-gradient(680px 420px at 100% -8%, rgba(30, 215, 96, 0.10), transparent 60%),
+      radial-gradient(560px 420px at 0% 4%, rgba(30, 215, 96, 0.05), transparent 55%);
     background-attachment: fixed;
-    /* 칠판 가장자리로 갈수록 어두워지는 비네트 */
-    box-shadow: inset 0 0 220px rgba(0, 0, 0, 0.55);
   }
 
-  /* 제목은 칠판에 또박또박 쓰이듯 등장한다 */
-  h1,
-  h2 {
-    animation: chalk-in 0.5s ease-out both;
-  }
+  h1, h2, h3 { letter-spacing: -0.03em; }
 }
 
 @layer components {
-  /* 분필로 테두리를 그린 듯한 기본 패널 */
+  /* 기본 패널(카드) */
   .glass {
-    @apply rounded-xl border border-white/25 bg-white/[0.025];
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.04),
-      0 10px 26px -16px rgba(0, 0, 0, 0.7);
-    animation: chalk-in 0.5s ease-out both;
+    @apply rounded-[1.25rem] border border-black/[0.06] bg-white;
+    box-shadow: 0 1px 2px rgba(13, 13, 15, 0.04), 0 12px 32px -20px rgba(13, 13, 15, 0.22);
   }
-  /* 상호작용 카드: 호버 시 분필선이 또렷해진다 */
   .glass-interactive {
-    @apply glass transition-colors duration-200;
+    @apply glass transition-all duration-200;
   }
   .glass-interactive:hover {
-    @apply border-white/50 bg-white/[0.06];
+    @apply -translate-y-0.5 border-black/[0.1];
+    box-shadow: 0 2px 6px rgba(13, 13, 15, 0.06), 0 20px 44px -22px rgba(13, 13, 15, 0.30);
   }
 
-  /* 칠판에 분필로 적어 넣는 입력칸 */
+  /* 입력칸 */
   .glass-input {
-    @apply w-full rounded-lg border border-white/25 bg-white/[0.03] px-4 py-2.5 text-lg text-white outline-none transition-all duration-200;
-    @apply placeholder:text-white/55 focus:border-white/70 focus:bg-white/[0.06];
-    @apply focus:shadow-[0_0_0_3px_rgba(255,255,255,0.10)];
-    -webkit-text-stroke: 0; /* 입력 글씨는 또렷하게 */
+    @apply w-full rounded-xl border border-black/10 bg-white px-4 py-2.5 text-base text-gray-900 outline-none transition-all duration-150;
+    @apply placeholder:text-gray-400;
+  }
+  .glass-input:focus {
+    border-color: #48b073;
+    box-shadow: 0 0 0 3px rgba(72, 176, 115, 0.18);
   }
 
-  /* 포인트(주요) 버튼: 흰색은 거의 안 보이게 아주 옅은 배경 + 분필 흰 글씨 */
+  /* 주요 버튼 — 연한 그린 + 흰 글씨 */
   .btn-primary {
-    @apply rounded-lg px-4 py-1.5 text-base font-bold transition-all duration-150;
-    color: #f3eddd;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    -webkit-text-stroke: 0; /* 버튼 글씨는 또렷하게 */
+    @apply inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-bold text-white transition-all duration-150;
+    background: #369b64;
+    text-shadow: 0 1px 1.5px rgba(0, 0, 0, 0.18);
   }
   .btn-primary:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.6);
-  }
-  .btn-primary:hover:not(:disabled) {
-    transform: translateY(-1px) rotate(-0.5deg);
+    background: #2e8555;
+    transform: scale(1.03);
   }
   .btn-primary:active:not(:disabled) {
-    transform: translateY(1px);
+    transform: scale(0.98);
   }
   .btn-primary:disabled {
     @apply opacity-50;
   }
 
-  /* 보조(고스트) 버튼: 분필 테두리만 있는 버튼 */
+  /* 보조(고스트) 버튼 — 뉴트럴 아웃라인 필 */
   .btn-ghost {
-    @apply rounded-lg border border-white/45 bg-transparent px-5 py-2 text-lg font-medium text-white/90 transition-colors;
-    @apply hover:border-white/70 hover:bg-white/[0.06] hover:text-white;
-    -webkit-text-stroke: 0;
-  }
-
-  /* 화면 가장자리 나무 액자 (App에서 렌더, 장식용) */
-  .board-frame {
-    position: fixed;
-    inset: 0;
-    z-index: 50;
-    pointer-events: none;
-    border: 13px solid #6b4a2b;
-    border-image: linear-gradient(145deg, #8a5a2f, #533618, #7a4e28, #5a3a1e) 1;
-    box-shadow:
-      inset 0 0 0 2px rgba(0, 0, 0, 0.45),
-      inset 0 0 46px rgba(0, 0, 0, 0.4);
+    @apply inline-flex items-center justify-center rounded-full border border-black/15 bg-white px-5 py-2.5 text-sm font-semibold text-gray-800 transition-all;
+    @apply hover:border-black/30 hover:bg-gray-50 hover:scale-[1.02];
   }
 }
 
-@keyframes chalk-in {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-    filter: blur(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
-  }
-}
-
-/* Gaegu는 300·400·700 굵기만 있어 medium(500)·semibold(600) 요청이 오히려 얇게
-   렌더된다. 칠판에서 잘 보이도록 700로 통일한다. (@tailwind utilities 뒤라 우선한다) */
-.font-medium,
-.font-semibold {
-  font-weight: 700;
-}
-
-/* 제목은 노란 분필로 — 흰색만 쓰지 않도록 색분필로 포인트를 준다.
-   페이지들이 붙인 text-white 유틸리티를 덮기 위해 !important 를 쓴다. */
-h1,
-h2,
-h3 {
-  color: #f6e17c !important;
-}
-
-/* 옅은 보조 텍스트가 초록 칠판 위에서 너무 흐리지 않게 최소 대비를 올린다.
-   (@tailwind utilities 뒤라 같은 특이성이면 우선 적용된다) */
-.text-white\/40 {
-  color: rgb(243 237 221 / 0.62);
-}
-.text-white\/45 {
-  color: rgb(243 237 221 / 0.66);
-}
-.text-white\/50 {
-  color: rgb(243 237 221 / 0.72);
-}
-
-/* 움직임 최소화를 선호하는 사용자에게는 애니메이션을 끈다 */
 @media (prefers-reduced-motion: reduce) {
-  h1,
-  h2,
-  .glass {
-    animation: none !important;
-  }
-  .btn-primary:hover:not(:disabled),
-  .btn-primary:active:not(:disabled) {
-    transform: none;
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
   }
 }
