@@ -2,12 +2,14 @@
 // 브라우저를 각 제공자의 인증 화면으로 보낸다(백엔드 API 호출이 아니라 직접 리다이렉트).
 // redirect_uri 는 백엔드 oauth.redirect-uri 및 구글 콘솔 등록 URI 와 "정확히" 같아야 한다.
 
-// 프론트 콜백 라우트. 구글이 여기로 브라우저를 되돌려 보내면, 그 페이지가 code를 백엔드에 넘긴다.
+// 구글이 인증 후 브라우저를 되돌려 보낼 곳 = 백엔드 콜백 API(/api/auth/google/callback).
+// 이 값은 구글 콘솔 등록 URI 및 백엔드 oauth.redirect-uri 와 "정확히" 같아야 한다.
 export function googleRedirectUri(): string {
-  // 명시적으로 지정하면 그 값을, 없으면 현재 출처 기준 프론트 콜백 경로를 쓴다.
+  // 명시하면 그 값을(로컬은 백엔드 포트가 달라 반드시 지정), 없으면 현재 출처 기준 백엔드 경로.
+  // (배포처럼 프론트/백엔드가 같은 도메인일 때만 폴백이 유효하다.)
   return (
     import.meta.env.VITE_GOOGLE_REDIRECT_URI ||
-    `${window.location.origin}/oauth/google/callback`
+    `${window.location.origin}/api/auth/google/callback`
   )
 }
 

@@ -7,8 +7,15 @@ import { useAuth } from '../auth/AuthContext.tsx'
 import { getToken } from '../auth/token.ts'
 import type { BattleCommentResponse } from '../types/api.ts'
 
-// SockJS를 쓰지 않으므로 ws:// 로 직접 연결한다. 미설정 시 개발 기본값 사용.
-const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8080/ws'
+// SockJS를 쓰지 않으므로 ws:// 로 직접 연결한다.
+// 미설정 시 현재 접속한 호스트 기준으로 만든다(배포 시 같은 도메인의 /ws 로 프록시된다고 가정).
+// - https 로 접속했으면 wss://, 아니면 ws:// 사용.
+// - 로컬 dev는 프론트(5173)/백엔드(8080) 포트가 달라 VITE_WS_URL 로 반드시 지정한다.
+function defaultWsUrl(): string {
+  const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+  return `${proto}//${window.location.host}/ws`
+}
+const WS_URL = import.meta.env.VITE_WS_URL || defaultWsUrl()
 
 // 기존 목록에 새로 온 것만(id 기준 중복 제거) 추가하고, 오래된→최신 순으로 정렬한다.
 // 백엔드 증분 조회가 GreaterThanEqual(경계 포함)이라 경계 댓글이 다시 올 수 있어 중복 제거가 필수.
