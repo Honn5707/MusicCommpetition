@@ -42,6 +42,53 @@ export function ScoreBar({ hostScore, challengerScore }: { hostScore: number; ch
   )
 }
 
+// 투표수 전용 파티션 — 호스트(초록)/도전자(파랑) 득표 + 막대 + 남은 시간을 한 칸에 모아 보여준다.
+export function VotePartition({
+  hostScore,
+  challengerScore,
+  status,
+  voteEndsAt,
+  compact = false,
+}: {
+  hostScore: number
+  challengerScore: number
+  status: MatchStatus
+  voteEndsAt?: string | null
+  compact?: boolean
+}) {
+  const total = hostScore + challengerScore
+  return (
+    <div className={`rounded-xl border border-gray-200 bg-gray-50 ${compact ? 'px-3 py-2.5' : 'p-4'}`}>
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <span
+          className={`font-bold uppercase tracking-wider text-gray-400 ${compact ? 'text-[11px]' : 'text-xs'}`}
+        >
+          투표 현황
+        </span>
+        <BattleDeadline status={status} voteEndsAt={voteEndsAt} compact={compact} />
+      </div>
+      <div className="flex items-center gap-3">
+        <span
+          className={`shrink-0 font-extrabold tabular-nums text-brand-700 ${compact ? 'text-lg' : 'text-3xl'}`}
+        >
+          {hostScore}
+        </span>
+        <div className="flex-1">
+          <ScoreBar hostScore={hostScore} challengerScore={challengerScore} />
+        </div>
+        <span
+          className={`shrink-0 font-extrabold tabular-nums text-blue-600 ${compact ? 'text-lg' : 'text-3xl'}`}
+        >
+          {challengerScore}
+        </span>
+      </div>
+      <div className={`mt-1.5 text-center text-gray-400 ${compact ? 'text-[11px]' : 'text-xs'}`}>
+        총 {total}표
+      </div>
+    </div>
+  )
+}
+
 // 호버 시 펼쳐지는 상세 영역의 한 줄(참가자별).
 function DetailRow({
   side,
@@ -93,7 +140,6 @@ export function BattleCard({ battle }: { battle: BattleSummaryResponse }) {
         <h2 className="line-clamp-1 text-base font-semibold text-gray-900">{battle.title}</h2>
         <div className="flex shrink-0 flex-col items-end gap-1">
           <StatusBadge status={battle.matchStatus} />
-          <BattleDeadline status={battle.matchStatus} voteEndsAt={battle.voteEndsTime} compact />
           {battle.createdAt && (
             <span className="text-[11px] text-gray-400">{formatDateTime(battle.createdAt)} 생성</span>
           )}
@@ -104,9 +150,7 @@ export function BattleCard({ battle }: { battle: BattleSummaryResponse }) {
         {/* 호스트 진영 — 그린 강조 */}
         <div className="min-w-0 rounded-xl border border-brand-200 border-l-4 border-l-brand-500 bg-brand-50 px-3 py-2">
           <p className="truncate text-sm font-semibold text-gray-800">{battle.hostSongTitle}</p>
-          <p className="mt-0.5 truncate text-xs text-gray-500">
-            {battle.hostNickname} · <b className="font-bold text-brand-700">{battle.hostScore}표</b>
-          </p>
+          <p className="mt-0.5 truncate text-xs text-gray-500">{battle.hostNickname}</p>
         </div>
         <span className="self-center text-xs font-bold tracking-widest text-gray-300">VS</span>
         {/* 도전자 진영 — 블루 */}
@@ -114,9 +158,7 @@ export function BattleCard({ battle }: { battle: BattleSummaryResponse }) {
           {battle.challengerSongTitle ? (
             <>
               <p className="truncate text-sm font-semibold text-gray-800">{battle.challengerSongTitle}</p>
-              <p className="mt-0.5 truncate text-xs text-gray-500">
-                {battle.challengerNickname} · <b className="font-bold text-blue-600">{battle.challengerScore}표</b>
-              </p>
+              <p className="mt-0.5 truncate text-xs text-gray-500">{battle.challengerNickname}</p>
             </>
           ) : (
             <p className="text-sm text-gray-400">상대 대기중</p>
@@ -124,7 +166,13 @@ export function BattleCard({ battle }: { battle: BattleSummaryResponse }) {
         </div>
       </div>
 
-      <ScoreBar hostScore={battle.hostScore} challengerScore={battle.challengerScore} />
+      <VotePartition
+        hostScore={battle.hostScore}
+        challengerScore={battle.challengerScore}
+        status={battle.matchStatus}
+        voteEndsAt={battle.voteEndsTime}
+        compact
+      />
 
       {/* 호버 시 펼쳐지는 상세 미리보기 (grid-rows 0fr→1fr 트릭으로 높이 애니메이션) */}
       <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out group-hover:grid-rows-[1fr]">

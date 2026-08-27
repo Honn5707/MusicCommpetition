@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { MatchStatus } from '../types/api.ts'
+import { parseServerDate } from '../lib/datetime.ts'
 
 interface Props {
   status: MatchStatus
@@ -50,15 +51,18 @@ export default function BattleDeadline({ status, voteEndsAt, compact = false }: 
     text = '종료됨'
   } else if (status === 'CALCULATING') {
     text = '집계 중'
-  } else if (!voteEndsAt) {
-    text = '도전자를 기다리는 중입니다'
   } else {
-    const remaining = new Date(voteEndsAt).getTime() - now
-    if (remaining > 0) {
-      text = `${formatRemaining(remaining)} 남음`
-      tone = 'live'
+    const end = parseServerDate(voteEndsAt)
+    if (!end) {
+      text = '도전자를 기다리는 중입니다'
     } else {
-      text = '곧 결과가 집계됩니다'
+      const remaining = end.getTime() - now
+      if (remaining > 0) {
+        text = `${formatRemaining(remaining)} 남음`
+        tone = 'live'
+      } else {
+        text = '곧 결과가 집계됩니다'
+      }
     }
   }
 
@@ -67,7 +71,7 @@ export default function BattleDeadline({ status, voteEndsAt, compact = false }: 
       className={`inline-flex items-center gap-1 whitespace-nowrap ${compact ? 'text-xs' : 'text-sm'} ${
         tone === 'live' ? 'font-medium text-amber-600' : 'text-gray-400'
       }`}
-      title={voteEndsAt ? new Date(voteEndsAt).toLocaleString() : undefined}
+      title={parseServerDate(voteEndsAt)?.toLocaleString()}
     >
       <span aria-hidden>⏳</span>
       {text}

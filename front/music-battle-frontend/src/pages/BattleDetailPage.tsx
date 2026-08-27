@@ -5,8 +5,9 @@ import { vote } from '../api/votes.ts'
 import { ApiError } from '../api/client.ts'
 import { useAuth } from '../auth/AuthContext.tsx'
 import BattleVideoPlayer from '../components/BattleVideoPlayer.tsx'
-import BattleDeadline from '../components/BattleDeadline.tsx'
+import { VotePartition } from '../components/BattleCard.tsx'
 import BattleComments from '../components/BattleComments.tsx'
+import FriendAddButton from '../components/FriendAddButton.tsx'
 import { formatDateTime } from '../lib/datetime.ts'
 import YoutubeDurationPreview from '../components/YoutubeDurationPreview.tsx'
 import YoutubeSearchBox from '../components/YoutubeSearchBox.tsx'
@@ -41,15 +42,19 @@ function StatusBadge({ status }: { status: MatchStatus }) {
   )
 }
 
-// 한쪽(호스트/도전자) 곡 카드. isWinner면 그라데이션 테두리로 강조한다.
+// 한쪽(호스트/도전자) 곡 카드. 진영색(호스트=초록/도전자=파랑)으로 구분하고
+// 득표수·점유율·리드/승자·YouTube 링크 등 정보를 담는다.
 // VOTING 상태에서는 onVote가 주어져 "투표하기" 버튼을 렌더한다.
 function EntryCard({
   label,
   profileMemberId,
   songTitle,
   videoId,
+  side,
   score,
+  totalScore,
   isWinner,
+  leading,
   dimmed,
   onVote,
   voting,
@@ -59,44 +64,83 @@ function EntryCard({
   profileMemberId?: number | null
   songTitle: string
   videoId: string
+  side: 'host' | 'challenger'
   score: number
+  totalScore: number
   isWinner: boolean
+  leading: boolean
   dimmed: boolean
   onVote?: () => void
   voting?: boolean
 }) {
+  const accent = side === 'host' ? 'text-brand-700' : 'text-blue-600'
+  const dotColor = side === 'host' ? 'bg-brand-500' : 'bg-blue-500'
+  const leadBorder = side === 'host' ? 'border-brand-300 text-brand-700' : 'border-blue-300 text-blue-600'
+  const share = totalScore > 0 ? Math.round((score / totalScore) * 100) : 0
+
   return (
     <div
-      className={`glass flex flex-col gap-4 p-5 transition-all ${
-        isWinner ? 'border-gray-400' : ''
+      className={`glass flex flex-col gap-5 p-6 transition-all ${
+        isWinner ? 'border-gray-400 ring-1 ring-gray-300' : ''
       } ${dimmed ? 'opacity-50' : ''}`}
     >
-      <div className="flex items-center justify-between">
-        {profileMemberId != null ? (
-          <Link
-            to={`/members/${profileMemberId}`}
-            state={{ nickname: label }}
-            className="text-xl font-semibold tracking-wide text-gray-700 underline-offset-4 transition-colors hover:text-gray-900 hover:underline sm:text-2xl"
-          >
-            {label}
-          </Link>
-        ) : (
-          <span className="text-xl font-semibold tracking-wide text-gray-700 sm:text-2xl">{label}</span>
-        )}
-        {isWinner && (
-          <span className="rounded-full bg-gray-900 px-3 py-1 text-sm font-semibold text-white">
-            WINNER
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-2">
+          <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${dotColor}`} />
+          {profileMemberId != null ? (
+            <Link
+              to={`/members/${profileMemberId}`}
+              state={{ nickname: label }}
+              className="truncate text-xl font-bold tracking-wide text-gray-800 underline-offset-4 transition-colors hover:text-gray-900 hover:underline sm:text-2xl"
+            >
+              {label}
+            </Link>
+          ) : (
+            <span className="truncate text-xl font-bold tracking-wide text-gray-800 sm:text-2xl">{label}</span>
+          )}
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
+          {isWinner && (
+            <span className="rounded-full bg-gray-900 px-3 py-1 text-sm font-semibold text-white">
+              WINNER 🏆
+            </span>
+          )}
+          {profileMemberId != null && <FriendAddButton targetId={profileMemberId} />}
+        </div>
+      </div>
+
+      <BattleVideoPlayer videoId={videoId} title={songTitle} />
+
+      <div>
+        <p className="truncate text-lg font-semibold text-gray-900 sm:text-xl" title={songTitle}>
+          {songTitle}
+        </p>
+        <a
+          href={`https://youtu.be/${videoId}`}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-1 inline-flex items-center gap-1 text-sm text-gray-400 transition-colors hover:text-gray-700"
+        >
+          YouTube에서 보기 ↗
+        </a>
+      </div>
+
+      {/* 득표수 · 점유율 · 리드 */}
+      <div className="flex items-end justify-between border-t border-gray-100 pt-4">
+        <div>
+          <p className={`text-4xl font-extrabold tabular-nums sm:text-5xl ${accent}`}>
+            {score}
+            <span className="ml-1 text-lg font-medium text-gray-400">표</span>
+          </p>
+          <p className="mt-0.5 text-sm text-gray-400">점유율 {share}%</p>
+        </div>
+        {leading && !isWinner && (
+          <span className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-bold ${leadBorder}`}>
+            리드 중 ▲
           </span>
         )}
       </div>
-      <BattleVideoPlayer videoId={videoId} title={songTitle} />
-      <div>
-        <p className="text-2xl font-semibold text-gray-900 sm:text-3xl">{songTitle}</p>
-        <p className="mt-1 text-5xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-          {score}
-          <span className="ml-1.5 text-xl font-medium text-gray-400">표</span>
-        </p>
-      </div>
+
       {onVote && (
         <button onClick={onVote} disabled={voting} className="btn-primary mt-1 w-full text-lg">
           {voting ? '투표 중…' : '투표하기'}
@@ -390,7 +434,6 @@ export default function BattleDetailPage() {
             <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-4xl">{data.title}</h1>
             <div className="flex shrink-0 flex-col items-end gap-1.5">
               <StatusBadge status={data.matchStatus} />
-              <BattleDeadline status={data.matchStatus} voteEndsAt={data.voteEndsAt} />
               {data.createdAt && (
                 <span className="text-xs text-gray-400">{formatDateTime(data.createdAt)} 생성</span>
               )}
@@ -422,13 +465,27 @@ export default function BattleDetailPage() {
           {/* 좌: 곡 + 액션 / 우: 실시간 댓글 — 큰 화면에서 한눈에 보이도록 나란히 배치 */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
             <div className="min-w-0">
+              {/* 투표수 전용 파티션 — 도전자가 있을 때만(모집중엔 득표 의미 없음) */}
+              {data.challengerVideoId && (
+                <div className="mb-5">
+                  <VotePartition
+                    hostScore={data.hostScore}
+                    challengerScore={data.challengerScore}
+                    status={data.matchStatus}
+                    voteEndsAt={data.voteEndsAt}
+                  />
+                </div>
+              )}
               <div className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2">
                 <EntryCard
                   label={data.hostNickname}
                   profileMemberId={data.hostMemberId}
                   songTitle={data.hostSongTitle}
                   videoId={data.hostVideoId}
+                  side="host"
                   score={data.hostScore}
+                  totalScore={data.hostScore + data.challengerScore}
+                  leading={data.hostScore > data.challengerScore}
                   isWinner={data.matchStatus === 'FINISHED' && data.winner === 'host'}
                   dimmed={data.matchStatus === 'FINISHED' && data.winner === 'challenger'}
                   onVote={isVoting ? () => handleVote('host') : undefined}
@@ -441,7 +498,10 @@ export default function BattleDetailPage() {
                     profileMemberId={data.challengerMemberId}
                     songTitle={data.challengerSongTitle}
                 videoId={data.challengerVideoId}
+                side="challenger"
                 score={data.challengerScore}
+                totalScore={data.hostScore + data.challengerScore}
+                leading={data.challengerScore > data.hostScore}
                 isWinner={data.matchStatus === 'FINISHED' && data.winner === 'challenger'}
                 dimmed={data.matchStatus === 'FINISHED' && data.winner === 'host'}
                 onVote={isVoting ? () => handleVote('challenger') : undefined}
