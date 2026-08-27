@@ -4,7 +4,8 @@ import { oauthCallback } from '../api/auth.ts'
 import { ApiError } from '../api/client.ts'
 import { useAuth } from '../auth/AuthContext.tsx'
 
-// 소셜 로그인 콜백 처리 페이지. (라우트: /oauth/:provider/callback)
+// 소셜 로그인 콜백 처리 페이지. (라우트: /oauth/callback 및 /oauth/:provider/callback)
+// 구글 redirect_uri 가 여기(프론트 경로)로 오고, 이 페이지가 code를 백엔드에 fetch로 넘긴다.
 // 구글이 브라우저를 이 주소로 되돌려 보내면(code 포함), 그 code를 백엔드에 넘겨 처리한다.
 // - 기존 회원(isNewMember=false): 토큰 저장 후 메인으로.
 // - 신규 회원(isNewMember=true): tempToken을 들고 닉네임 확정 화면으로.

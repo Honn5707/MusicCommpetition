@@ -114,7 +114,9 @@ export default function App() {
         <Route path="/recruiting" element={<BattleListPage filter="RECRUITING" />} />
         <Route path="/finished" element={<BattleListPage filter="FINISHED" />} />
         <Route path="/login" element={<LoginPage />} />
-        {/* 소셜 로그인: 구글 콜백 도착지 + 신규 회원 닉네임 확정 */}
+        {/* 소셜 로그인: 구글 콜백 도착지(프론트 경로) + 신규 회원 닉네임 확정 */}
+        {/* 구글 redirect_uri = /oauth/callback (provider 없으면 google 기본값) */}
+        <Route path="/oauth/callback" element={<OauthCallbackPage />} />
         <Route path="/oauth/:provider/callback" element={<OauthCallbackPage />} />
         <Route path="/oauth/register" element={<OauthRegisterPage />} />
         <Route path="/battles/new" element={<CreateBattlePage />} />
