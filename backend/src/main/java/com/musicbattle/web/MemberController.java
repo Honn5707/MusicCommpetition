@@ -1,14 +1,11 @@
 package com.musicbattle.web;
 
 
-
 import com.musicbattle.service.FollowService;
 import com.musicbattle.service.MemberService;
 import com.musicbattle.web.dto.*;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;

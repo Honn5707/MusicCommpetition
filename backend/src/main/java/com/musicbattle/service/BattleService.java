@@ -7,15 +7,17 @@ import com.musicbattle.domain.MatchEntry;
 import com.musicbattle.domain.Member;
 import com.musicbattle.domain.enums.EntrySide;
 import com.musicbattle.domain.enums.MatchStatus;
-import com.musicbattle.repository.*;
+import com.musicbattle.repository.BattleRepository;
+import com.musicbattle.repository.MatchEntryRepository;
+import com.musicbattle.repository.MatchRepository;
+import com.musicbattle.repository.MemberRepository;
 import com.musicbattle.web.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.annotation.Native;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.musicbattle.domain.enums.BattleMode.ONE_VS_ONE;

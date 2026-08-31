@@ -1,7 +1,8 @@
 package com.musicbattle.web;
 
 import com.musicbattle.service.VoteService;
-import com.musicbattle.util.IpUtilities;import com.musicbattle.web.dto.VoteRequest;
+import com.musicbattle.util.IpUtilities;
+import com.musicbattle.web.dto.VoteRequest;
 import com.musicbattle.web.dto.VoteResult;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -9,11 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.MessageDigest;
-import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
-import java.util.HexFormat;
 
 @RestController
 @RequestMapping("/api/matches/{matchId}/votes")

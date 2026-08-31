@@ -1,6 +1,7 @@
 package com.musicbattle.util;
 
-import jakarta.servlet.http.HttpServletRequest;import org.springframework.stereotype.Component;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

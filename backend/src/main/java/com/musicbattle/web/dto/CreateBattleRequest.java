@@ -3,8 +3,6 @@ package com.musicbattle.web.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import java.time.LocalDateTime;
-
 public record CreateBattleRequest(
         @NotBlank String title,
         @NotBlank String videoId,

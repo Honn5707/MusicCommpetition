@@ -5,7 +5,6 @@ import com.musicbattle.web.dto.BattleCommentRequest;
 import com.musicbattle.web.dto.BattleCommentResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,9 +1,13 @@
 package com.musicbattle.service;
 
 import com.musicbattle.config.BattleRuleProperties;
-import com.musicbattle.domain.*;
+import com.musicbattle.domain.Match;
+import com.musicbattle.domain.MatchEntry;
+import com.musicbattle.domain.Vote;
 import com.musicbattle.domain.enums.MatchStatus;
-import com.musicbattle.repository.*;
+import com.musicbattle.repository.MatchEntryRepository;
+import com.musicbattle.repository.MatchRepository;
+import com.musicbattle.repository.VoteRepository;
 import com.musicbattle.web.dto.VoteRequest;
 import com.musicbattle.web.dto.VoteResult;
 import lombok.RequiredArgsConstructor;

@@ -4,7 +4,6 @@ import com.musicbattle.config.EmailProperties;
 import com.musicbattle.web.dto.EmailCodeConfirmRequest;
 import com.musicbattle.web.dto.EmailCodeSendRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;

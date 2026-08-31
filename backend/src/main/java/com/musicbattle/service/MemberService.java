@@ -1,14 +1,13 @@
 package com.musicbattle.service;
 
 
-import com.musicbattle.domain.Battle;
 import com.musicbattle.domain.Match;
-import com.musicbattle.domain.MatchEntry;
 import com.musicbattle.domain.Member;
-import com.musicbattle.domain.enums.EntrySide;
 import com.musicbattle.domain.enums.MatchStatus;
 import com.musicbattle.domain.enums.Provider;
-import com.musicbattle.repository.*;
+import com.musicbattle.repository.MatchEntryRepository;
+import com.musicbattle.repository.MatchRepository;
+import com.musicbattle.repository.MemberRepository;
 import com.musicbattle.util.BattleSummaryAssembler;
 import com.musicbattle.util.RecaptchaUtilities;
 import com.musicbattle.web.dto.*;
@@ -16,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,9 +1,11 @@
 package com.musicbattle.scheduler;
 
-import com.musicbattle.config.BattleRuleProperties;import com.musicbattle.domain.Match;
+import com.musicbattle.config.BattleRuleProperties;
+import com.musicbattle.domain.Match;
 import com.musicbattle.domain.enums.MatchStatus;
 import com.musicbattle.repository.MatchRepository;
-import com.musicbattle.service.BattleService;import com.musicbattle.service.MatchLifecycleService;
+import com.musicbattle.service.BattleService;
+import com.musicbattle.service.MatchLifecycleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
